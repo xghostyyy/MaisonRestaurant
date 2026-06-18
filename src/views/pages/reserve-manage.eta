@@ -1,0 +1,143 @@
+<div class="page-reserve-manage">
+  <header class="page-header section--sm">
+    <div class="container">
+      <p class="eyebrow">Управление бронью</p>
+      <h1>Ваша бронь</h1>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container reserve-manage-container">
+
+      <% if (it.created) { %>
+      <div class="alert alert--success" role="alert">
+        Заявка на бронирование отправлена! Мы подтвердим её в ближайшее время.
+      </div>
+      <% } %>
+      <% if (it.cancelled) { %>
+      <div class="alert alert--info" role="alert">
+        Ваша бронь отменена.
+      </div>
+      <% } %>
+      <% if (it.edited) { %>
+      <div class="alert alert--success" role="alert">
+        Бронь успешно обновлена и ожидает подтверждения.
+      </div>
+      <% } %>
+      <% if (it.reservation) { %>
+      <% const r = it.reservation %>
+
+      <!-- Status card -->
+      <div class="card manage-card">
+        <div class="manage-card__header">
+          <h2>Детали брони</h2>
+          <span class="badge badge--<%= r.status.toLowerCase() %>">
+            <%= {'PENDING':'Ожидает','CONFIRMED':'Подтверждена','SEATED':'Гости сидят','COMPLETED':'Завершена','REJECTED':'Отклонена','CANCELLED':'Отменена','NO_SHOW':'Не пришли'}[r.status] || r.status %>
+          </span>
+        </div>
+
+        <dl class="manage-detail-list">
+          <div class="manage-detail-item">
+            <dt>Имя</dt><dd><%= r.guest_name %></dd>
+          </div>
+          <div class="manage-detail-item">
+            <dt>Телефон</dt><dd><%= r.guest_phone %></dd>
+          </div>
+          <% if (r.guest_email) { %>
+          <div class="manage-detail-item">
+            <dt>Email</dt><dd><%= r.guest_email %></dd>
+          </div>
+          <% } %>
+          <div class="manage-detail-item">
+            <dt>Дата и время</dt>
+            <dd><%= it.formatDate(r.starts_at) %>, <%= it.formatTime(r.starts_at) %></dd>
+          </div>
+          <div class="manage-detail-item">
+            <dt>Гостей</dt><dd><%= r.party_size %></dd>
+          </div>
+          <% if (r.notes) { %>
+          <div class="manage-detail-item">
+            <dt>Пожелания</dt><dd><%= r.notes %></dd>
+          </div>
+          <% } %>
+          <% if (r.staff_note) { %>
+          <div class="manage-detail-item">
+            <dt>Комментарий от нас</dt><dd><%= r.staff_note %></dd>
+          </div>
+          <% } %>
+        </dl>
+
+        <% if (['PENDING','CONFIRMED'].includes(r.status)) { %>
+        <div class="manage-actions">
+          <!-- Edit form (toggle) -->
+          <details class="manage-edit-details">
+            <summary class="btn btn--ghost">Изменить бронь</summary>
+            <div class="manage-edit-form">
+              <% if (it.editError) { %>
+              <div class="alert alert--error" role="alert"><%= it.editError %></div>
+              <% } %>
+              <form method="post" action="/reserve/<%= r.manage_token %>/edit">
+                <div class="form-row form-row--2">
+                  <div class="form-group">
+                    <label class="form-label form-label--required" for="edit-name">Имя</label>
+                    <input type="text" id="edit-name" name="guestName" class="form-input"
+                      value="<%= it.editValues?.guestName || r.guest_name %>" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label form-label--required" for="edit-phone">Телефон</label>
+                    <input type="tel" id="edit-phone" name="guestPhone" class="form-input"
+                      value="<%= it.editValues?.guestPhone || r.guest_phone %>" required />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="edit-email">Email</label>
+                  <input type="email" id="edit-email" name="guestEmail" class="form-input"
+                    value="<%= it.editValues?.guestEmail || r.guest_email || '' %>" />
+                </div>
+                <div class="form-row form-row--3">
+                  <div class="form-group">
+                    <label class="form-label form-label--required" for="edit-date">Дата</label>
+                    <input type="date" id="edit-date" name="date" class="form-input"
+                      value="<%= it.editValues?.date || r.starts_at.slice(0,10) %>" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label form-label--required" for="edit-time">Время</label>
+                    <input type="time" id="edit-time" name="time" class="form-input"
+                      value="<%= it.editValues?.time || it.formatTime(r.starts_at) %>" required step="900" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label form-label--required" for="edit-size">Гостей</label>
+                    <select id="edit-size" name="partySize" class="form-select" required>
+                      <% for (let i=1;i<=12;i++) { %>
+                      <option value="<%= i %>" <%= parseInt(it.editValues?.partySize||r.party_size)===i?'selected':'' %>><%= i %></option>
+                      <% } %>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="edit-notes">Пожелания</label>
+                  <textarea id="edit-notes" name="notes" class="form-textarea" rows="2"><%= it.editValues?.notes || r.notes || '' %></textarea>
+                </div>
+                <button type="submit" class="btn btn--primary">Сохранить изменения</button>
+              </form>
+            </div>
+          </details>
+
+          <!-- Cancel -->
+          <form method="post" action="/reserve/<%= r.manage_token %>/cancel"
+            onsubmit="return confirm('Вы уверены, что хотите отменить бронь?')">
+            <button type="submit" class="btn btn--danger btn--sm">Отменить бронь</button>
+          </form>
+        </div>
+        <% } %>
+      </div>
+
+      <% } %>
+
+      <div class="manage-footer">
+        <p>Есть вопросы? Позвоните нам: <a href="tel:+70000000000">+7 000 000-00-00</a></p>
+      </div>
+
+    </div>
+  </section>
+</div>

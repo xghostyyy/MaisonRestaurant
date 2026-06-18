@@ -1,0 +1,236 @@
+<div class="page-reserve">
+  <header class="page-header section--sm">
+    <div class="container">
+      <p class="eyebrow">Бронирование</p>
+      <h1>Забронировать столик</h1>
+    </div>
+  </header>
+
+  <section class="section reserve-section">
+    <div class="container reserve-container">
+
+      <% if (it.flashError) { %>
+      <div class="alert alert--error" role="alert"><%= it.flashError %></div>
+      <% } %>
+
+      <form class="reserve-form" method="post" action="/reserve" novalidate>
+
+        <!-- Step 1: Date & party size -->
+        <fieldset class="reserve-step" id="step-date">
+          <legend class="reserve-step__legend">
+            <span class="reserve-step__num">1</span> Дата и компания
+          </legend>
+
+          <div class="form-row form-row--2">
+            <div class="form-group">
+              <label class="form-label form-label--required" for="date">Дата</label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                class="form-input <%= it.errors?.date ? 'form-input--error' : '' %>"
+                value="<%= it.values?.date || it.defaultDate %>"
+                min="<%= new Date().toISOString().slice(0,10) %>"
+                required
+                aria-describedby="<%= it.errors?.date ? 'date-error' : '' %>"
+              />
+              <% if (it.errors?.date) { %>
+              <p class="form-error" id="date-error" role="alert"><%= it.errors.date[0] %></p>
+              <% } %>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label form-label--required" for="partySize">Гостей</label>
+              <select
+                id="partySize"
+                name="partySize"
+                class="form-select <%= it.errors?.partySize ? 'form-input--error' : '' %>"
+                required
+              >
+                <% for (let i = 1; i <= 12; i++) { %>
+                <option value="<%= i %>" <%= parseInt(it.values?.partySize) === i ? 'selected' : '' %>>
+                  <%= i %> <%= i === 1 ? 'гость' : i < 5 ? 'гостя' : 'гостей' %>
+                </option>
+                <% } %>
+              </select>
+              <% if (it.errors?.partySize) { %>
+              <p class="form-error" id="partySize-error" role="alert"><%= it.errors.partySize[0] %></p>
+              <% } %>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn--primary" id="check-slots-btn" onclick="checkSlots()">
+            Показать доступное время
+          </button>
+        </fieldset>
+
+        <!-- Step 2: Time slot -->
+        <fieldset class="reserve-step" id="step-time">
+          <legend class="reserve-step__legend">
+            <span class="reserve-step__num">2</span> Время
+          </legend>
+
+          <div class="slots-grid" id="slots-grid" role="radiogroup" aria-label="Выберите время">
+            <% if (it.slots && it.slots.length > 0) { %>
+              <% it.slots.forEach(slot => { %>
+              <label class="slot-option">
+                <input type="radio" name="time" value="<%= slot.time %>"
+                  <%= it.values?.time === slot.time ? 'checked' : '' %> required />
+                <span class="slot-option__time"><%= slot.time %></span>
+                <span class="slot-option__seats"><%= slot.tables[0].seats %> мест</span>
+              </label>
+              <% }) %>
+            <% } else if (it.values?.date) { %>
+              <p class="slots-empty">На выбранную дату нет свободных столов. Попробуйте другую дату.</p>
+            <% } else { %>
+              <p class="slots-hint">Выберите дату и количество гостей выше, затем нажмите «Показать время»</p>
+            <% } %>
+          </div>
+
+          <input type="hidden" name="tableId" id="hidden-table-id" value="<%= it.values?.tableId || '' %>" />
+          <% if (it.errors?.time) { %>
+          <p class="form-error" role="alert"><%= it.errors.time[0] %></p>
+          <% } %>
+        </fieldset>
+
+        <!-- Step 3: Contact info -->
+        <fieldset class="reserve-step" id="step-contacts">
+          <legend class="reserve-step__legend">
+            <span class="reserve-step__num">3</span> Контакты
+          </legend>
+
+          <div class="form-row form-row--2">
+            <div class="form-group">
+              <label class="form-label form-label--required" for="guestName">Ваше имя</label>
+              <input
+                type="text"
+                id="guestName"
+                name="guestName"
+                class="form-input <%= it.errors?.guestName ? 'form-input--error' : '' %>"
+                value="<%= it.values?.guestName || '' %>"
+                autocomplete="name"
+                required
+                minlength="2"
+                aria-describedby="<%= it.errors?.guestName ? 'name-error' : '' %>"
+              />
+              <% if (it.errors?.guestName) { %>
+              <p class="form-error" id="name-error" role="alert"><%= it.errors.guestName[0] %></p>
+              <% } %>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label form-label--required" for="guestPhone">Телефон</label>
+              <input
+                type="tel"
+                id="guestPhone"
+                name="guestPhone"
+                class="form-input <%= it.errors?.guestPhone ? 'form-input--error' : '' %>"
+                value="<%= it.values?.guestPhone || '' %>"
+                autocomplete="tel"
+                required
+                aria-describedby="<%= it.errors?.guestPhone ? 'phone-error' : '' %>"
+                placeholder="+7 000 000-00-00"
+              />
+              <% if (it.errors?.guestPhone) { %>
+              <p class="form-error" id="phone-error" role="alert"><%= it.errors.guestPhone[0] %></p>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="guestEmail">Email (необязательно)</label>
+            <input
+              type="email"
+              id="guestEmail"
+              name="guestEmail"
+              class="form-input <%= it.errors?.guestEmail ? 'form-input--error' : '' %>"
+              value="<%= it.values?.guestEmail || '' %>"
+              autocomplete="email"
+              aria-describedby="guestEmail-hint"
+            />
+            <p class="form-hint" id="guestEmail-hint">На этот адрес придёт подтверждение и ссылка для управления бронью</p>
+            <% if (it.errors?.guestEmail) { %>
+            <p class="form-error" role="alert"><%= it.errors.guestEmail[0] %></p>
+            <% } %>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="notes">Пожелания (необязательно)</label>
+            <textarea
+              id="notes"
+              name="notes"
+              class="form-textarea"
+              rows="3"
+              placeholder="Аллергии, высокий стул для ребёнка, особые пожелания…"
+            ><%= it.values?.notes || '' %></textarea>
+          </div>
+        </fieldset>
+
+        <!-- Submit -->
+        <div class="reserve-actions">
+          <button type="submit" class="btn btn--accent btn--lg">
+            Забронировать столик
+          </button>
+          <p class="reserve-note">
+            Нажимая «Забронировать», вы соглашаетесь с тем, что мы свяжемся с вами
+            для подтверждения.
+          </p>
+        </div>
+
+      </form>
+    </div>
+  </section>
+</div>
+
+<script>
+// Inline JS for no-framework slot checking
+async function checkSlots() {
+  const btn = document.getElementById('check-slots-btn')
+  const dateEl = document.getElementById('date')
+  const partySizeEl = document.getElementById('partySize')
+  const grid = document.getElementById('slots-grid')
+
+  if (!dateEl.value || !partySizeEl.value) {
+    dateEl.reportValidity()
+    return
+  }
+
+  btn.disabled = true
+  btn.textContent = 'Загрузка...'
+  grid.innerHTML = '<p class="slots-hint">Ищем свободные столики…</p>'
+
+  try {
+    const res = await fetch(`/api/availability?date=${dateEl.value}&partySize=${partySizeEl.value}`)
+    const data = await res.json()
+    renderSlots(data.slots || [])
+  } catch {
+    grid.innerHTML = '<p class="slots-hint" style="color:var(--burgundy)">Не удалось загрузить слоты. Попробуйте снова.</p>'
+  } finally {
+    btn.disabled = false
+    btn.textContent = 'Показать доступное время'
+  }
+}
+
+function renderSlots(slots) {
+  const grid = document.getElementById('slots-grid')
+  if (slots.length === 0) {
+    grid.innerHTML = '<p class="slots-empty">На выбранную дату нет свободных столов. Попробуйте другую дату.</p>'
+    return
+  }
+  grid.innerHTML = slots.map(slot => `
+    <label class="slot-option">
+      <input type="radio" name="time" value="${slot.time}" required />
+      <span class="slot-option__time">${slot.time}</span>
+      <span class="slot-option__seats">${slot.tables[0].seats} мест</span>
+    </label>
+  `).join('')
+
+  // Update hidden table when slot selected
+  grid.querySelectorAll('input[type="radio"]').forEach((radio, i) => {
+    radio.addEventListener('change', () => {
+      const tableId = slots[i]?.tables?.[0]?.id || ''
+      document.getElementById('hidden-table-id').value = tableId
+    })
+  })
+}
+</script>

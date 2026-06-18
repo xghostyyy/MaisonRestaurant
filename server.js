@@ -10,6 +10,8 @@ import fastifyView from '@fastify/view'
 import { Eta } from 'eta'
 import { config } from './src/config.js'
 import publicRoutes from './src/routes/public.js'
+import reserveRoutes from './src/routes/reserve.js'
+import apiRoutes from './src/routes/api.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -74,6 +76,8 @@ await app.register(fastifyView, {
 
 // Routes
 await app.register(publicRoutes)
+await app.register(reserveRoutes)
+await app.register(apiRoutes)
 
 // 404 handler
 app.setNotFoundHandler(async (_req, reply) => {
