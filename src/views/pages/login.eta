@@ -1,0 +1,42 @@
+<div class="login-page">
+  <div class="login-box">
+    <a href="/" class="login-logo" aria-label="На главную">Maison</a>
+    <h1 class="login-title">Вход для персонала</h1>
+
+    <% if (it.error) { %>
+    <div class="alert alert--error" role="alert"><%= it.error %></div>
+    <% } %>
+
+    <form class="login-form" method="post" action="/login" novalidate>
+      <div class="form-group">
+        <label class="form-label form-label--required" for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-input"
+          value="<%= it.values?.email || '' %>"
+          autocomplete="email"
+          required
+          autofocus
+        />
+      </div>
+      <div class="form-group">
+        <label class="form-label form-label--required" for="password">Пароль</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-input"
+          autocomplete="current-password"
+          required
+          minlength="10"
+        />
+      </div>
+      <button type="submit" class="btn btn--primary btn--lg login-btn">
+        Войти
+      </button>
+    </form>
+    <p class="login-back"><a href="/">← На сайт ресторана</a></p>
+  </div>
+</div>

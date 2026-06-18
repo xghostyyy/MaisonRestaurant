@@ -1,0 +1,174 @@
+<div class="staff-page-header">
+  <h1>Редактор плана зала</h1>
+  <div style="display:flex;gap:var(--space-3)">
+    <button class="btn btn--ghost" onclick="addTable()">+ Стол</button>
+    <button class="btn btn--accent" onclick="saveFloor()">Сохранить</button>
+  </div>
+</div>
+
+<div id="save-status" style="color:var(--olive);margin-bottom:var(--space-4);display:none">✓ Сохранено</div>
+
+<div class="floor-editor-wrap">
+  <svg id="floor-editor-svg" class="floor-editor-svg" viewBox="0 0 100 100"
+       xmlns="http://www.w3.org/2000/svg">
+  </svg>
+
+  <div class="floor-editor-panel" id="selection-panel" style="display:none">
+    <h3>Свойства стола</h3>
+    <div class="form-group">
+      <label class="form-label" for="prop-label">Метка</label>
+      <input type="text" id="prop-label" class="form-input" />
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="prop-seats">Мест</label>
+      <input type="number" id="prop-seats" class="form-input" min="1" max="20" />
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="prop-section">Секция</label>
+      <input type="text" id="prop-section" class="form-input" placeholder="main/veranda/bar" />
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="prop-shape">Форма</label>
+      <select id="prop-shape" class="form-select">
+        <option value="round">Круглый</option>
+        <option value="square">Квадратный</option>
+        <option value="rect">Прямоугольный</option>
+      </select>
+    </div>
+    <button class="btn btn--danger btn--sm" onclick="deleteSelected()">Удалить стол</button>
+  </div>
+</div>
+
+<script>
+// Inline floor editor (vanilla JS drag-and-drop)
+const tablesData = JSON.parse(document.getElementById('floor-editor-svg').closest('.floor-editor-wrap').previousElementSibling.previousElementSibling ? '<%= it.tablesJson %>' : '[]')
+
+let tables = JSON.parse('<%= it.tablesJson.replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\\\\/g, "\\\\") %>')
+tables = JSON.parse(`<%= it.tablesJson.replace(/`/g,"\\`") %>`)
+let selectedId = null
+const svg = document.getElementById('floor-editor-svg')
+const panel = document.getElementById('selection-panel')
+
+function render() {
+  svg.innerHTML = ''
+  tables.forEach(t => {
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+    g.setAttribute('transform', `translate(${t.x},${t.y})`)
+    g.setAttribute('class', 'editor-table' + (t.id === selectedId ? ' selected' : ''))
+    g.setAttribute('data-id', t.id)
+    g.style.cursor = 'move'
+
+    let shape
+    if (t.shape === 'round') {
+      shape = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+      shape.setAttribute('cx', t.width/2); shape.setAttribute('cy', t.height/2)
+      shape.setAttribute('r', Math.min(t.width,t.height)/2*0.85)
+    } else {
+      shape = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+      shape.setAttribute('width', t.width); shape.setAttribute('height', t.height)
+      shape.setAttribute('rx', '1.5')
+    }
+    shape.setAttribute('fill', t.id === selectedId ? 'rgba(217,138,43,0.3)' : 'rgba(62,74,46,0.15)')
+    shape.setAttribute('stroke', t.id === selectedId ? '#D98A2B' : '#3E4A2E')
+    shape.setAttribute('stroke-width', '0.5')
+
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+    label.setAttribute('x', t.width/2); label.setAttribute('y', t.height/2+1)
+    label.setAttribute('text-anchor', 'middle'); label.setAttribute('font-size', '2.5')
+    label.setAttribute('fill', '#231F1B'); label.setAttribute('font-weight', '600')
+    label.textContent = t.label
+
+    g.appendChild(shape); g.appendChild(label)
+    makeDraggable(g, t)
+    g.addEventListener('click', () => selectTable(t.id))
+    svg.appendChild(g)
+  })
+}
+
+function makeDraggable(el, tableObj) {
+  let startX, startY, startTX, startTY
+  el.addEventListener('mousedown', e => {
+    e.preventDefault()
+    selectTable(tableObj.id)
+    const pt = svg.createSVGPoint()
+    pt.x = e.clientX; pt.y = e.clientY
+    const svgPt = pt.matrixTransform(svg.getScreenCTM().inverse())
+    startX = svgPt.x; startY = svgPt.y
+    startTX = tableObj.x; startTY = tableObj.y
+
+    const onMove = e2 => {
+      const p2 = svg.createSVGPoint()
+      p2.x = e2.clientX; p2.y = e2.clientY
+      const sp = p2.matrixTransform(svg.getScreenCTM().inverse())
+      tableObj.x = Math.max(0, Math.min(100 - tableObj.width, startTX + sp.x - startX))
+      tableObj.y = Math.max(0, Math.min(100 - tableObj.height, startTY + sp.y - startY))
+      render()
+    }
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+    }
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+  })
+}
+
+function selectTable(id) {
+  selectedId = id
+  const t = tables.find(t=>t.id===id)
+  if (t) {
+    panel.style.display = 'flex'
+    document.getElementById('prop-label').value = t.label
+    document.getElementById('prop-seats').value = t.seats
+    document.getElementById('prop-section').value = t.section || ''
+    document.getElementById('prop-shape').value = t.shape
+
+    // live update props
+    ;['prop-label','prop-seats','prop-section','prop-shape'].forEach(idStr => {
+      document.getElementById(idStr).onchange = () => {
+        t.label = document.getElementById('prop-label').value
+        t.seats = parseInt(document.getElementById('prop-seats').value) || t.seats
+        t.section = document.getElementById('prop-section').value
+        t.shape = document.getElementById('prop-shape').value
+        render()
+      }
+    })
+  }
+  render()
+}
+
+function addTable() {
+  const id = 'c' + Math.random().toString(36).slice(2,10)
+  tables.push({ id, label: String(tables.length+1), seats: 4, section: 'main', shape: 'square', x: 10, y: 10, width: 10, height: 10, rotation: 0, isActive: 1 })
+  render()
+  selectTable(id)
+}
+
+function deleteSelected() {
+  if (!selectedId) return
+  if (!confirm('Удалить стол?')) return
+  tables = tables.filter(t=>t.id!==selectedId)
+  selectedId = null
+  panel.style.display = 'none'
+  render()
+}
+
+async function saveFloor() {
+  const body = new FormData()
+  body.append('tablesJson', JSON.stringify(tables))
+  const res = await fetch('/admin/floor', { method: 'POST', body })
+  if (res.ok) {
+    const s = document.getElementById('save-status')
+    s.style.display = 'block'
+    setTimeout(()=>s.style.display='none', 2000)
+  }
+}
+
+render()
+</script>
+
+<style>
+.floor-editor-wrap{display:grid;grid-template-columns:1fr auto;gap:var(--space-6);background:var(--cream);border:1px solid var(--border-soft);border-radius:var(--radius-xl);padding:var(--space-4)}
+.floor-editor-svg{width:100%;border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--white)}
+.floor-editor-panel{width:220px;display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-4);background:var(--white);border-radius:var(--radius-lg);border:1px solid var(--border-soft)}
+</style>

@@ -1,0 +1,33 @@
+<div class="staff-page-header"><h1>Отчёты — Чаевые</h1></div>
+
+<form class="filter-form" method="get" action="/admin/reports" style="margin-bottom:var(--space-6)">
+  <span class="filter-form__label">Период:</span>
+  <input type="date" name="from" value="<%= it.fromDate %>" class="form-input" style="width:auto" />
+  <span>—</span>
+  <input type="date" name="to" value="<%= it.toDate %>" class="form-input" style="width:auto" />
+  <button type="submit" class="btn btn--primary btn--sm">Применить</button>
+</form>
+
+<% const total = it.tips.reduce((s,t)=>s+t.amount_cents,0) %>
+<p style="margin-bottom:var(--space-4);font-size:var(--text-lg)">Итого за период: <strong class="price"><%= (total/100).toFixed(0) %> ₽</strong></p>
+
+<div class="data-table-wrap">
+  <table class="data-table">
+    <thead><tr><th>Дата</th><th>Сотрудник</th><th>Роль</th><th>Сумма</th><th>Способ</th><th>Примечание</th></tr></thead>
+    <tbody>
+      <% it.tips.forEach(t => { %>
+      <tr>
+        <td><%= t.shift_date %></td>
+        <td><%= t.recipient_name||'—' %></td>
+        <td><%= {WAITER:'Официант',HOST:'Хостес',CHEF:'Шеф',ADMIN:'Управляющий'}[t.recipient_role]||'—' %></td>
+        <td class="price"><strong><%= (t.amount_cents/100).toFixed(0) %> ₽</strong></td>
+        <td><%= {CASH:'Наличные',CARD:'Карта',TRANSFER:'Перевод'}[t.method] %></td>
+        <td><%= t.note||'—' %></td>
+      </tr>
+      <% }) %>
+      <% if (it.tips.length === 0) { %>
+      <tr><td colspan="6" style="text-align:center;color:var(--ink-soft)">Нет данных</td></tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>

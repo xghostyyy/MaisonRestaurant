@@ -1,0 +1,26 @@
+<div class="staff-page-header"><h1>Дашборд</h1></div>
+
+<div class="admin-stats-grid">
+  <div class="card admin-stat">
+    <p class="admin-stat__label">Брони сегодня</p>
+    <p class="admin-stat__value">—</p>
+  </div>
+  <div class="card admin-stat">
+    <p class="admin-stat__label">Гостей сегодня</p>
+    <p class="admin-stat__value">—</p>
+  </div>
+  <div class="card admin-stat">
+    <p class="admin-stat__label">Чаевые за месяц</p>
+    <p class="admin-stat__value price">—</p>
+  </div>
+</div>
+
+<div style="margin-top:var(--space-8)">
+  <p style="color:var(--ink-soft)">Полная аналитика доступна в разделе <a href="/admin/reports">Отчёты</a>.</p>
+</div>
+
+<style>
+.admin-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4)}
+.admin-stat__label{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:var(--space-2)}
+.admin-stat__value{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:var(--weight-bold)}
+</style>

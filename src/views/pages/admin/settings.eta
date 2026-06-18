@@ -1,0 +1,57 @@
+<div class="staff-page-header"><h1>Настройки ресторана</h1></div>
+
+<% if (it.flash) { %><div class="alert alert--success" style="margin-bottom:var(--space-6)">Настройки сохранены</div><% } %>
+
+<form method="post" action="/admin/settings" style="max-width:600px">
+  <div class="card" style="margin-bottom:var(--space-6)">
+    <h2 style="font-size:var(--text-lg);margin-bottom:var(--space-6)">Часы работы и бронирование</h2>
+    <div class="form-row form-row--2">
+      <div class="form-group">
+        <label class="form-label">Timezone</label>
+        <input type="text" name="timezone" value="<%= it.settings.timezone %>" class="form-input" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Шаг слотов (мин)</label>
+        <input type="number" name="slotGranularityMin" value="<%= it.settings.slot_granularity_min %>" class="form-input" min="5" max="60" step="5" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Длительность брони (мин)</label>
+        <input type="number" name="diningMinutes" value="<%= it.settings.dining_minutes %>" class="form-input" min="30" max="300" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Буфер уборки (мин)</label>
+        <input type="number" name="bufferMin" value="<%= it.settings.buffer_min %>" class="form-input" min="0" max="60" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Мин. ожидание (ч)</label>
+        <input type="number" name="minLeadHours" value="<%= it.settings.min_lead_hours %>" class="form-input" min="0" max="48" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Макс. дней вперёд</label>
+        <input type="number" name="maxAdvanceDays" value="<%= it.settings.max_advance_days %>" class="form-input" min="1" max="365" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Отмена до (ч)</label>
+        <input type="number" name="cancelCutoffHours" value="<%= it.settings.cancel_cutoff_hours %>" class="form-input" min="0" max="48" />
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:var(--space-6)">
+    <h2 style="font-size:var(--text-lg);margin-bottom:var(--space-4)">Чаевые</h2>
+    <div class="form-group">
+      <label class="form-label">Режим чаевых</label>
+      <select name="tipModel" class="form-select">
+        <option value="DIRECT" <%= it.settings.tip_model==='DIRECT'?'selected':'' %>>DIRECT (персональные)</option>
+        <option value="POOL" <%= it.settings.tip_model==='POOL'?'selected':'' %>>POOL (общий пул)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Распределение пула (JSON)</label>
+      <input type="text" name="tipPoolDefaultSplit" value='<%= it.settings.tip_pool_default_split %>' class="form-input" />
+      <p class="form-hint">Пример: {"WAITER":70,"HOST":15,"CHEF":15}</p>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn--accent">Сохранить настройки</button>
+</form>

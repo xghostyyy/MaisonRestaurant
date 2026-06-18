@@ -1,0 +1,66 @@
+<div class="staff-page-header">
+  <h1>Расписание смен</h1>
+  <button class="btn btn--accent" onclick="document.getElementById('add-shift-dialog').showModal()">+ Смена</button>
+</div>
+
+<div class="data-table-wrap">
+  <table class="data-table">
+    <thead><tr><th>Сотрудник</th><th>Роль</th><th>Начало</th><th>Конец</th><th>Примечание</th><th></th></tr></thead>
+    <tbody>
+      <% it.shifts.forEach(s => { %>
+      <tr>
+        <td><%= s.user_name %></td>
+        <td><%= {WAITER:'Официант',HOST:'Хостес',CHEF:'Шеф',ADMIN:'Управляющий'}[s.role]||s.role %></td>
+        <td><%= new Date(s.starts_at).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) %></td>
+        <td><%= new Date(s.ends_at).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) %></td>
+        <td><%= s.notes||'–' %></td>
+        <td>
+          <form method="post" action="/admin/shifts/<%= s.id %>/delete">
+            <button type="submit" class="btn btn--danger btn--sm">✕</button>
+          </form>
+        </td>
+      </tr>
+      <% }) %>
+      <% if (it.shifts.length === 0) { %>
+      <tr><td colspan="6" style="text-align:center;color:var(--ink-soft)">Смен нет</td></tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<dialog id="add-shift-dialog" style="border:none;border-radius:var(--radius-xl);padding:var(--space-8);max-width:480px;width:90vw">
+  <h2 style="margin-bottom:var(--space-6)">Новая смена</h2>
+  <form method="post" action="/admin/shifts">
+    <div class="form-group">
+      <label class="form-label form-label--required" for="sh-user">Сотрудник</label>
+      <select id="sh-user" name="userId" class="form-select" required>
+        <% it.staff.filter(u=>u.is_active).forEach(u => { %>
+        <option value="<%= u.id %>"><%= u.name %> (<%= u.role %>)</option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="form-row form-row--2">
+      <div class="form-group">
+        <label class="form-label form-label--required" for="sh-start">Начало</label>
+        <input type="datetime-local" id="sh-start" name="startsAt" class="form-input" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label form-label--required" for="sh-end">Конец</label>
+        <input type="datetime-local" id="sh-end" name="endsAt" class="form-input" required />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="sh-role">Роль в смене</label>
+      <select id="sh-role" name="role" class="form-select">
+        <option value="WAITER">Официант</option>
+        <option value="HOST">Хостес</option>
+        <option value="CHEF">Шеф-повар</option>
+        <option value="ADMIN">Управляющий</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:var(--space-3)">
+      <button type="submit" class="btn btn--accent">Добавить</button>
+      <button type="button" class="btn btn--ghost" onclick="this.closest('dialog').close()">Отмена</button>
+    </div>
+  </form>
+</dialog>

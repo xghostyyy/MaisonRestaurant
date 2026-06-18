@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= it.title || 'Maison' %></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;1,9..144,300&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/tokens.css" />
+    <link rel="stylesheet" href="/css/base.css" />
+    <link rel="stylesheet" href="/css/components.css" />
+    <link rel="stylesheet" href="/css/staff.css" />
+    <% if (it.pageCSS) { %>
+    <link rel="stylesheet" href="/css/pages/<%= it.pageCSS %>.css" />
+    <% } %>
+  </head>
+  <body class="staff-body">
+
+    <div class="staff-layout">
+      <aside class="staff-sidebar" id="staff-sidebar">
+        <%~ include('partials/staff-nav', it) %>
+      </aside>
+
+      <div class="staff-content">
+        <header class="staff-topbar">
+          <button class="staff-menu-toggle" aria-label="Открыть меню" aria-controls="staff-sidebar">
+            ☰
+          </button>
+          <span class="staff-topbar__title"><%= it.pageTitle || 'Кабинет' %></span>
+          <span class="staff-topbar__user"><%= it.user?.name || '' %></span>
+        </header>
+
+        <main class="staff-main" id="main-content">
+          <%~ it.body %>
+        </main>
+      </div>
+    </div>
+
+    <div id="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+    <script type="module" src="/js/main.js"></script>
+    <% if (it.pageJS) { %>
+    <script type="module" src="/js/<%= it.pageJS %>.js"></script>
+    <% } %>
+  </body>
+</html>

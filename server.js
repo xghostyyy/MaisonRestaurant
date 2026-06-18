@@ -7,11 +7,17 @@ import fastifyCookie from '@fastify/cookie'
 import fastifySession from '@fastify/session'
 import fastifyHelmet from '@fastify/helmet'
 import fastifyView from '@fastify/view'
+import fastifyRateLimit from '@fastify/rate-limit'
 import { Eta } from 'eta'
 import { config } from './src/config.js'
 import publicRoutes from './src/routes/public.js'
 import reserveRoutes from './src/routes/reserve.js'
 import apiRoutes from './src/routes/api.js'
+import authRoutes from './src/routes/auth.js'
+import waiterRoutes from './src/routes/waiter.js'
+import hostRoutes from './src/routes/host.js'
+import chefRoutes from './src/routes/chef.js'
+import adminRoutes from './src/routes/admin.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -43,6 +49,13 @@ await app.register(fastifyStatic, {
   root: join(__dirname, 'public'),
   prefix: '/',
   decorateReply: false,
+})
+
+// Rate limiting
+await app.register(fastifyRateLimit, {
+  global: false,
+  max: 200,
+  timeWindow: '1 minute',
 })
 
 // Form body parser
@@ -78,6 +91,11 @@ await app.register(fastifyView, {
 await app.register(publicRoutes)
 await app.register(reserveRoutes)
 await app.register(apiRoutes)
+await app.register(authRoutes)
+await app.register(waiterRoutes)
+await app.register(hostRoutes)
+await app.register(chefRoutes)
+await app.register(adminRoutes)
 
 // 404 handler
 app.setNotFoundHandler(async (_req, reply) => {

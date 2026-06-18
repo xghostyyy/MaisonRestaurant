@@ -1,0 +1,44 @@
+<div class="staff-page-header"><h1>Мои чаевые</h1></div>
+
+<div class="tips-summary-grid">
+  <div class="card tips-stat">
+    <p class="tips-stat__label">Сегодня</p>
+    <p class="tips-stat__value price"><%= (it.todaySum/100).toFixed(0) %> ₽</p>
+  </div>
+  <div class="card tips-stat">
+    <p class="tips-stat__label">Эта неделя</p>
+    <p class="tips-stat__value price"><%= (it.weekSum/100).toFixed(0) %> ₽</p>
+  </div>
+  <div class="card tips-stat">
+    <p class="tips-stat__label">Этот месяц</p>
+    <p class="tips-stat__value price"><%= (it.monthSum/100).toFixed(0) %> ₽</p>
+  </div>
+</div>
+
+<% if (it.todayTips.length > 0) { %>
+<section style="margin-top:var(--space-8)">
+  <h2 class="staff-section-title">Сегодняшние чаевые</h2>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Время</th><th>Сумма</th><th>Способ</th><th>Примечание</th></tr></thead>
+      <tbody>
+        <% it.todayTips.forEach(t => { %>
+        <tr>
+          <td><%= new Date(t.created_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) %></td>
+          <td class="price"><strong><%= (t.amount_cents/100).toFixed(0) %> ₽</strong></td>
+          <td><%= {CASH:'Наличные',CARD:'Карта',TRANSFER:'Перевод'}[t.method]||t.method %></td>
+          <td><%= t.note || '–' %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+<% } %>
+
+<style>
+.tips-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4)}
+.tips-stat{text-align:center}
+.tips-stat__label{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:var(--space-2)}
+.tips-stat__value{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:var(--weight-bold);color:var(--olive)}
+</style>

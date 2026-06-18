@@ -1,0 +1,33 @@
+<nav class="staff-nav" aria-label="Навигация сотрудника">
+  <div class="staff-nav__user">
+    <p class="staff-nav__name"><%= it.user.name %></p>
+    <p class="staff-nav__role"><%= {'ADMIN':'Управляющий','HOST':'Хостес','WAITER':'Официант','CHEF':'Шеф-повар'}[it.user.role] || it.user.role %></p>
+  </div>
+
+  <ul class="staff-nav__links" role="list">
+    <% if (it.user.role === 'HOST' || it.user.role === 'ADMIN') { %>
+    <li><a href="/host" class="staff-nav__link <%= it.activeSection === 'host' ? 'is-active' : '' %>">🗺 План зала</a></li>
+    <% } %>
+    <% if (it.user.role === 'WAITER' || it.user.role === 'ADMIN') { %>
+    <li><a href="/waiter" class="staff-nav__link <%= it.activeSection === 'waiter' ? 'is-active' : '' %>">🍽 Мои столы</a></li>
+    <li><a href="/waiter/tips" class="staff-nav__link <%= it.activeSection === 'tips' ? 'is-active' : '' %>">💰 Чаевые</a></li>
+    <li><a href="/waiter/shifts" class="staff-nav__link <%= it.activeSection === 'shifts' ? 'is-active' : '' %>">📅 Смены</a></li>
+    <% } %>
+    <% if (it.user.role === 'CHEF' || it.user.role === 'ADMIN') { %>
+    <li><a href="/chef/menu" class="staff-nav__link <%= it.activeSection === 'chef-menu' ? 'is-active' : '' %>">📋 Меню</a></li>
+    <% } %>
+    <% if (it.user.role === 'ADMIN') { %>
+    <li class="staff-nav__separator"></li>
+    <li><a href="/admin" class="staff-nav__link <%= it.activeSection === 'admin' ? 'is-active' : '' %>">📊 Дашборд</a></li>
+    <li><a href="/admin/staff" class="staff-nav__link <%= it.activeSection === 'staff' ? 'is-active' : '' %>">👥 Персонал</a></li>
+    <li><a href="/admin/shifts" class="staff-nav__link <%= it.activeSection === 'admin-shifts' ? 'is-active' : '' %>">📅 Расписание</a></li>
+    <li><a href="/admin/floor" class="staff-nav__link <%= it.activeSection === 'floor' ? 'is-active' : '' %>">✏️ Редактор зала</a></li>
+    <li><a href="/admin/reports" class="staff-nav__link <%= it.activeSection === 'reports' ? 'is-active' : '' %>">📈 Отчёты</a></li>
+    <li><a href="/admin/settings" class="staff-nav__link <%= it.activeSection === 'settings' ? 'is-active' : '' %>">⚙️ Настройки</a></li>
+    <% } %>
+  </ul>
+
+  <form method="post" action="/logout" class="staff-nav__logout">
+    <button type="submit" class="btn btn--ghost btn--sm">Выйти</button>
+  </form>
+</nav>

@@ -1,0 +1,26 @@
+<div class="staff-page-header"><h1>Мои смены</h1></div>
+
+<% if (it.shifts.length > 0) { %>
+<div class="data-table-wrap">
+  <table class="data-table">
+    <thead><tr><th>Дата</th><th>Начало</th><th>Конец</th><th>Роль</th><th>Примечание</th></tr></thead>
+    <tbody>
+      <% it.shifts.forEach(s => { %>
+      <tr>
+        <td><%= new Date(s.starts_at).toLocaleDateString('ru-RU') %></td>
+        <td><%= new Date(s.starts_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) %></td>
+        <td><%= new Date(s.ends_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) %></td>
+        <td><%= {WAITER:'Официант',HOST:'Хостес',CHEF:'Шеф',ADMIN:'Управляющий'}[s.role]||s.role %></td>
+        <td><%= s.notes || '–' %></td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% } else { %>
+<div class="empty-state">
+  <div class="empty-state__icon">📅</div>
+  <p class="empty-state__title">Смены не назначены</p>
+  <p>Расписание составляет управляющий</p>
+</div>
+<% } %>
