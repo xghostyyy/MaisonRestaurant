@@ -1,3 +1,4 @@
+import { z } from 'zod'
 import { requireAuth, requireRole } from '../auth.js'
 import { listAllStaff, createUser, updateUser, deactivateUser, listShiftsByDate, createShift, deleteShift, findUserById } from '../services/staff.js'
 import { getSettings, updateSettings } from '../services/settings.js'
@@ -5,6 +6,21 @@ import { listActiveTables, listAllTables, saveFloorLayout } from '../services/ta
 import { getTipsReport } from '../services/tips.js'
 import { hashPassword } from '../auth.js'
 import { randomBytes } from 'crypto'
+
+const TableSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1).max(20),
+  seats: z.coerce.number().int().min(1).max(30),
+  section: z.string().nullable().optional(),
+  shape: z.enum(['round', 'square', 'rect']),
+  x: z.coerce.number().min(0).max(100),
+  y: z.coerce.number().min(0).max(100),
+  width: z.coerce.number().min(1).max(50),
+  height: z.coerce.number().min(1).max(50),
+  rotation: z.coerce.number().optional().default(0),
+  isActive: z.coerce.number().optional().default(1),
+})
+const FloorSchema = z.array(TableSchema).max(100)
 
 function cuid() { return 'c' + randomBytes(8).toString('hex') }
 
@@ -98,13 +114,17 @@ export default async function adminRoutes(app) {
   })
 
   app.post('/admin/floor', { preHandler: [authHook, roleHook] }, async (req, reply) => {
-    let tables
+    let raw
     try {
-      tables = JSON.parse(req.body.tablesJson || '[]')
+      raw = JSON.parse(req.body.tablesJson || '[]')
     } catch {
       return reply.status(400).send({ error: 'Invalid JSON' })
     }
-    saveFloorLayout(tables)
+    const parsed = FloorSchema.safeParse(raw)
+    if (!parsed.success) {
+      return reply.status(400).send({ error: 'Validation error', issues: parsed.error.issues })
+    }
+    saveFloorLayout(parsed.data)
     return reply.send({ ok: true })
   })
 
