@@ -124,6 +124,58 @@
   </form>
 </section>
 
+<!-- Waitlist -->
+<section class="staff-section" style="margin-top:var(--space-6)">
+  <h2 class="staff-section-title">Лист ожидания</h2>
+
+  <% if (it.waitlist.length > 0) { %>
+  <div class="data-table-wrap" style="margin-bottom:var(--space-4)">
+    <table class="data-table">
+      <thead><tr><th>Гость</th><th>Телефон</th><th>Гостей</th><th>Примечание</th><th>Добавлен</th><th></th></tr></thead>
+      <tbody>
+        <% it.waitlist.forEach(w => { %>
+        <tr>
+          <td><strong><%= w.guest_name %></strong></td>
+          <td><%= w.guest_phone %></td>
+          <td><%= w.party_size %></td>
+          <td><%= w.notes || '—' %></td>
+          <td style="font-size:var(--text-xs);color:var(--ink-soft)"><%= new Date(w.created_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) %></td>
+          <td>
+            <form method="post" action="/host/waitlist/<%= w.id %>/resolve">
+              <button type="submit" class="btn btn--ghost btn--sm">Разрешить</button>
+            </form>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } else { %>
+  <p style="color:var(--ink-soft);font-size:var(--text-sm);margin-bottom:var(--space-4)">Лист ожидания пуст</p>
+  <% } %>
+
+  <details>
+    <summary class="btn btn--ghost btn--sm" style="cursor:pointer;list-style:none;display:inline-flex">+ Добавить в лист ожидания</summary>
+    <form method="post" action="/host/waitlist" style="margin-top:var(--space-4);display:grid;grid-template-columns:1fr 1fr auto auto;gap:var(--space-3);align-items:end">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Гость</label>
+        <input type="text" name="guestName" class="form-input" placeholder="Имя" required />
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Телефон</label>
+        <input type="tel" name="guestPhone" class="form-input" placeholder="+7..." required />
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Гостей</label>
+        <select name="partySize" class="form-select">
+          <% for(let i=1;i<=8;i++){%><option value="<%= i %>"><%= i %></option><%}%>
+        </select>
+      </div>
+      <button type="submit" class="btn btn--primary" style="margin-bottom:0">Добавить</button>
+    </form>
+  </details>
+</section>
+
 <style>
 .floor-map-section { margin-bottom: var(--space-8); }
 .floor-map-wrap { background: var(--cream); border: 1px solid var(--border-soft); border-radius: var(--radius-xl); padding: var(--space-4); }

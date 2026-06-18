@@ -1,9 +1,10 @@
 import { requireAuth, requireRole } from '../auth.js'
 import { listActiveTables, getFloorWithStates } from '../services/tables.js'
-import { listReservationsForDay, listPendingAndConfirmed, updateReservationStatus, validateTransition } from '../services/reservations.js'
+import { listReservationsForDay, updateReservationStatus } from '../services/reservations.js'
 import { openVisit, findOpenVisitByTable } from '../services/visits.js'
 import { getSettings } from '../services/settings.js'
 import { publish } from '../services/events.js'
+import { addToWaitlist, listWaitlist, resolveWaitlist } from '../services/waitlist.js'
 import { randomBytes } from 'crypto'
 
 function cuid() { return 'c' + randomBytes(8).toString('hex') }
@@ -22,6 +23,8 @@ export default async function hostRoutes(app) {
     const pending = reservations.filter(r => r.status === 'PENDING')
     const confirmed = reservations.filter(r => r.status === 'CONFIRMED')
 
+    const waitlist = listWaitlist()
+
     return reply.view('pages/host/index', {
       title: 'План зала — Maison',
       pageTitle: 'План зала',
@@ -31,6 +34,7 @@ export default async function hostRoutes(app) {
       reservations,
       pending,
       confirmed,
+      waitlist,
       todayStr,
       pageJS: 'floor-map',
     }, { layout: 'layout-staff' })
@@ -101,6 +105,26 @@ export default async function hostRoutes(app) {
     })
 
     publish('visit.seated', { id: visit.id, tableId, partySize })
+    return reply.redirect('/host')
+  })
+
+  // POST /host/waitlist — add to waitlist
+  app.post('/host/waitlist', { preHandler: [authHook, roleHook] }, async (req, reply) => {
+    const { guestName, guestPhone, partySize, notes } = req.body || {}
+    if (!guestName || !guestPhone) return reply.redirect('/host?error=waitlist')
+    addToWaitlist({
+      id: cuid(),
+      guestName: guestName.trim(),
+      guestPhone: guestPhone.trim(),
+      partySize: parseInt(partySize || 2),
+      notes: notes?.trim() || null,
+    })
+    return reply.redirect('/host')
+  })
+
+  // POST /host/waitlist/:id/resolve
+  app.post('/host/waitlist/:id/resolve', { preHandler: [authHook, roleHook] }, async (req, reply) => {
+    resolveWaitlist(req.params.id)
     return reply.redirect('/host')
   })
 }

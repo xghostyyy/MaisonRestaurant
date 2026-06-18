@@ -1,5 +1,5 @@
 import { getAvailableSlots } from '../services/reservations.js'
-import { listActiveTables } from '../services/tables.js'
+import { listActiveTables, getFloorWithStates } from '../services/tables.js'
 import { getSettings } from '../services/settings.js'
 import { subscribe } from '../services/events.js'
 
@@ -21,6 +21,16 @@ export default async function apiRoutes(app) {
     })
 
     return reply.send({ slots })
+  })
+
+  // GET /api/floor — current floor state (HOST/ADMIN)
+  app.get('/api/floor', async (req, reply) => {
+    if (!req.session?.user?.role || !['HOST', 'ADMIN'].includes(req.session.user.role)) {
+      return reply.status(401).send({ error: 'Unauthorized' })
+    }
+    const settings = getSettings()
+    const tables = getFloorWithStates(settings, new Date())
+    return reply.send({ tables })
   })
 
   // GET /api/events — SSE stream for HOST/ADMIN
