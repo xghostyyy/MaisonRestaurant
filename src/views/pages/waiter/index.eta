@@ -3,6 +3,31 @@
   <span class="badge badge--confirmed"><%= it.todayStr %></span>
 </div>
 
+<% if (it.unassigned && it.unassigned.length > 0) { %>
+<section class="staff-section" style="margin-bottom:var(--space-8)">
+  <h2 class="staff-section-title">Свободные столы — взять обслуживание</h2>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Стол</th><th>Гостей</th><th>С</th><th></th></tr></thead>
+      <tbody>
+        <% it.unassigned.forEach(v => { %>
+        <tr>
+          <td><strong><%= v.table_label %></strong></td>
+          <td><%= v.party_size %></td>
+          <td><%= new Date(v.seated_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) %></td>
+          <td>
+            <form method="post" action="/waiter/visits/<%= v.id %>/open">
+              <button type="submit" class="btn btn--accent btn--sm">Взять стол</button>
+            </form>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+<% } %>
+
 <% if (it.openVisits.length > 0) { %>
 <section class="staff-section">
   <h2 class="staff-section-title">Открытые визиты</h2>

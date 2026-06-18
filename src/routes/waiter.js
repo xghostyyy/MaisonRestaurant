@@ -1,5 +1,5 @@
 import { requireAuth, requireRole } from '../auth.js'
-import { listOpenVisitsByWaiter, listTodayVisitsByWaiter, closeVisit, findVisitById } from '../services/visits.js'
+import { listOpenVisitsByWaiter, listTodayVisitsByWaiter, listAllOpenVisits, closeVisit, findVisitById, assignWaiter } from '../services/visits.js'
 import { listShiftsByUser } from '../services/staff.js'
 import { sumTipsByRecipient, listTipsByRecipient, recordTip } from '../services/tips.js'
 import { publish } from '../services/events.js'
@@ -15,6 +15,8 @@ export default async function waiterRoutes(app) {
   app.get('/waiter', { preHandler: [authHook, roleHook] }, async (req, reply) => {
     const todayStr = new Date().toISOString().slice(0, 10)
     const openVisits = listOpenVisitsByWaiter(req.user.id)
+    const allOpen = listAllOpenVisits()
+    const unassigned = allOpen.filter(v => !v.waiter_id)
     const todayVisits = listTodayVisitsByWaiter(req.user.id, todayStr)
 
     return reply.view('pages/waiter/index', {
@@ -23,9 +25,21 @@ export default async function waiterRoutes(app) {
       user: req.user,
       activeSection: 'waiter',
       openVisits,
+      unassigned,
       todayVisits,
       todayStr,
     }, { layout: 'layout-staff' })
+  })
+
+  // POST /waiter/visits/:id/open — claim unassigned visit
+  app.post('/waiter/visits/:id/open', { preHandler: [authHook, roleHook] }, async (req, reply) => {
+    const visit = findVisitById(req.params.id)
+    if (!visit) return reply.status(404).view('pages/404', { title: 'Не найдено' })
+    if (visit.waiter_id && visit.waiter_id !== req.user.id) {
+      return reply.status(409).redirect('/waiter?error=claimed')
+    }
+    assignWaiter(visit.id, req.user.id)
+    return reply.redirect('/waiter')
   })
 
   // POST /waiter/visits/:id/close
