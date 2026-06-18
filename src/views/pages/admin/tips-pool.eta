@@ -1,0 +1,76 @@
+<div class="staff-page-header">
+  <h1>Пул чаевых</h1>
+</div>
+
+<form class="filter-form" method="get" action="/admin/tips/pool" style="margin-bottom:var(--space-6)">
+  <span class="filter-form__label">Дата:</span>
+  <input type="date" name="date" value="<%= it.date %>" class="form-input" style="width:auto" />
+  <button type="submit" class="btn btn--primary btn--sm">Открыть</button>
+</form>
+
+<% if (it.pool.distributed_at) { %>
+<div style="background:var(--olive);color:white;border-radius:var(--radius-md);padding:var(--space-4);margin-bottom:var(--space-6)">
+  ✓ Пул на <%= it.date %> распределён <%= new Date(it.pool.distributed_at).toLocaleString('ru-RU') %>
+</div>
+<% } %>
+
+<% if (it.settings.tip_model !== 'POOL') { %>
+<div style="background:var(--saffron);color:white;border-radius:var(--radius-md);padding:var(--space-4);margin-bottom:var(--space-6)">
+  Режим чаевых: <strong>DIRECT</strong>. Включите POOL в <a href="/admin/settings" style="color:white;text-decoration:underline">настройках</a>, чтобы использовать пул.
+</div>
+<% } %>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-6);margin-bottom:var(--space-8)">
+  <div class="card">
+    <p style="font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:var(--space-2)">Итого в пуле</p>
+    <p style="font-family:var(--font-display);font-size:var(--text-3xl);font-weight:700;color:var(--olive)" class="price">
+      <%= (it.pool.total_cents / 100).toFixed(0) %> ₽
+    </p>
+  </div>
+  <div class="card">
+    <p style="font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);margin-bottom:var(--space-2)">Статус</p>
+    <p style="font-size:var(--text-lg);font-weight:600;color:<%= it.pool.distributed_at ? 'var(--olive)' : 'var(--saffron)' %>">
+      <%= it.pool.distributed_at ? 'Распределён' : 'Ожидает распределения' %>
+    </p>
+  </div>
+</div>
+
+<% if (it.dayShifts.length > 0) { %>
+<section style="margin-bottom:var(--space-8)">
+  <h2 class="staff-section-title">Смены на <%= it.date %></h2>
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead><tr><th>Сотрудник</th><th>Роль</th><th>Начало</th><th>Конец</th><th>Часов</th></tr></thead>
+      <tbody>
+        <% it.dayShifts.forEach(s => { %>
+        <% const hours = ((new Date(s.ends_at) - new Date(s.starts_at)) / 3600000).toFixed(1) %>
+        <tr>
+          <td><strong><%= s.user_name %></strong></td>
+          <td><%= {WAITER:'Официант',HOST:'Хостес',CHEF:'Шеф',ADMIN:'Управляющий'}[s.role]||s.role %></td>
+          <td><%= new Date(s.starts_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) %></td>
+          <td><%= new Date(s.ends_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) %></td>
+          <td><%= hours %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+<% } else { %>
+<p style="color:var(--ink-soft);margin-bottom:var(--space-8)">Смены на эту дату не назначены — распределение невозможно.</p>
+<% } %>
+
+<% if (!it.pool.distributed_at && it.pool.total_cents > 0 && it.dayShifts.length > 0) { %>
+<div class="card" style="border:2px solid var(--saffron);padding:var(--space-6)">
+  <h3 style="font-size:var(--text-lg);margin-bottom:var(--space-3)">Распределить пул</h3>
+  <p style="color:var(--ink-soft);margin-bottom:var(--space-4)">
+    Будет распределено <strong class="price"><%= (it.pool.total_cents/100).toFixed(0) %> ₽</strong>
+    по схеме: <code><%= it.settings.tip_pool_default_split %></code>
+    пропорционально отработанным часам внутри каждой роли.
+  </p>
+  <form method="post" action="/admin/tips/pool/<%= it.date %>/distribute"
+        onsubmit="return confirm('Распределить пул чаевых за <%= it.date %>? Это действие необратимо.')">
+    <button type="submit" class="btn btn--accent">Распределить</button>
+  </form>
+</div>
+<% } %>

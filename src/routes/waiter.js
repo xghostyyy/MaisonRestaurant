@@ -1,7 +1,8 @@
 import { requireAuth, requireRole } from '../auth.js'
 import { listOpenVisitsByWaiter, listTodayVisitsByWaiter, listAllOpenVisits, closeVisit, findVisitById, assignWaiter } from '../services/visits.js'
 import { listShiftsByUser } from '../services/staff.js'
-import { sumTipsByRecipient, listTipsByRecipient, recordTip } from '../services/tips.js'
+import { sumTipsByRecipient, listTipsByRecipient, recordTip, findOrCreatePool, addToPool } from '../services/tips.js'
+import { getSettings } from '../services/settings.js'
 import { publish } from '../services/events.js'
 import { randomBytes } from 'crypto'
 
@@ -58,16 +59,24 @@ export default async function waiterRoutes(app) {
 
     if (tipCents > 0) {
       const shiftDate = new Date().toISOString().slice(0, 10)
-      recordTip({
-        id: cuid(),
-        amountCents: tipCents,
-        method: tipMethod,
-        visitId: visit.id,
-        recipientId: req.user.id,
-        poolId: null,
-        shiftDate,
-        note: null,
-      })
+      const settings = getSettings()
+
+      if (settings.tip_model === 'POOL') {
+        const poolId = cuid()
+        findOrCreatePool(poolId, shiftDate)
+        addToPool(shiftDate, tipCents)
+      } else {
+        recordTip({
+          id: cuid(),
+          amountCents: tipCents,
+          method: tipMethod,
+          visitId: visit.id,
+          recipientId: req.user.id,
+          poolId: null,
+          shiftDate,
+          note: null,
+        })
+      }
     }
 
     return reply.redirect('/waiter')

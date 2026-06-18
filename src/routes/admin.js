@@ -4,7 +4,7 @@ import { listAllStaff, createUser, updateUser, deactivateUser, listShiftsByDate,
 import { updatePassword } from '../services/staff.js'
 import { getSettings, updateSettings } from '../services/settings.js'
 import { listActiveTables, listAllTables, saveFloorLayout } from '../services/tables.js'
-import { getTipsReport } from '../services/tips.js'
+import { getTipsReport, findOrCreatePool, distributePool } from '../services/tips.js'
 import { hashPassword } from '../auth.js'
 import { randomBytes } from 'crypto'
 
@@ -205,5 +205,67 @@ export default async function adminRoutes(app) {
       tipPoolDefaultSplit: b.tipPoolDefaultSplit || getSettings().tip_pool_default_split,
     })
     return reply.redirect('/admin/settings?saved=1')
+  })
+
+  // ---- Tip pool distribution ----
+
+  app.get('/admin/tips/pool', { preHandler: [authHook, roleHook] }, async (req, reply) => {
+    const today = new Date().toISOString().slice(0, 10)
+    const date = req.query.date || today
+    const settings = getSettings()
+
+    const pool = findOrCreatePool(cuid(), date)
+    const dayShifts = listShiftsByDate(`${date}T00:00:00`, `${date}T23:59:59`)
+
+    return reply.view('pages/admin/tips-pool', {
+      title: 'Пул чаевых — Maison',
+      pageTitle: 'Пул чаевых',
+      user: req.user,
+      activeSection: 'reports',
+      pool,
+      date,
+      dayShifts,
+      settings,
+    }, { layout: 'layout-staff' })
+  })
+
+  app.post('/admin/tips/pool/:date/distribute', { preHandler: [authHook, roleHook] }, async (req, reply) => {
+    const { date } = req.params
+    const settings = getSettings()
+    const pool = findOrCreatePool(cuid(), date)
+
+    if (pool.distributed_at) return reply.redirect('/admin/tips/pool?date=' + date + '&error=already')
+    if (!pool.total_cents || pool.total_cents === 0) return reply.redirect('/admin/tips/pool?date=' + date + '&error=empty')
+
+    let split
+    try { split = JSON.parse(settings.tip_pool_default_split) } catch { split = { WAITER: 70, HOST: 15, CHEF: 15 } }
+
+    const dayShifts = listShiftsByDate(`${date}T00:00:00`, `${date}T23:59:59`)
+
+    const recipients = []
+    for (const [role, pct] of Object.entries(split)) {
+      const roleCents = Math.floor(pool.total_cents * Number(pct) / 100)
+      const roleShifts = dayShifts.filter(s => s.role === role)
+      if (!roleShifts.length) continue
+
+      const hours = roleShifts.map(s => ({
+        userId: s.user_id,
+        h: (new Date(s.ends_at) - new Date(s.starts_at)) / 3600000,
+      }))
+      const totalH = hours.reduce((sum, p) => sum + p.h, 0)
+      let remaining = roleCents
+
+      hours.forEach((p, i) => {
+        const share = i === hours.length - 1
+          ? remaining
+          : Math.floor(roleCents * p.h / (totalH || 1))
+        remaining -= share
+        if (share > 0) recipients.push({ userId: p.userId, amountCents: share })
+      })
+    }
+
+    const tipIds = recipients.map(() => cuid())
+    distributePool(pool.id, recipients, tipIds)
+    return reply.redirect('/admin/tips/pool?date=' + date + '&distributed=1')
   })
 }

@@ -23,6 +23,7 @@
     <li><a href="/admin/shifts" class="staff-nav__link <%= it.activeSection === 'admin-shifts' ? 'is-active' : '' %>">📅 Расписание</a></li>
     <li><a href="/admin/floor" class="staff-nav__link <%= it.activeSection === 'floor' ? 'is-active' : '' %>">✏️ Редактор зала</a></li>
     <li><a href="/admin/reports" class="staff-nav__link <%= it.activeSection === 'reports' ? 'is-active' : '' %>">📈 Отчёты</a></li>
+    <li><a href="/admin/tips/pool" class="staff-nav__link <%= it.activeSection === 'tips-pool' ? 'is-active' : '' %>">💰 Пул чаевых</a></li>
     <li><a href="/admin/settings" class="staff-nav__link <%= it.activeSection === 'settings' ? 'is-active' : '' %>">⚙️ Настройки</a></li>
     <% } %>
   </ul>
