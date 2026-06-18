@@ -1,0 +1,111 @@
+<div class="page-about">
+
+  <header class="about-hero section">
+    <div class="container">
+      <div class="about-hero__inner">
+        <div class="about-hero__text">
+          <p class="eyebrow">Наша история</p>
+          <h1>Maison — дом,<br/>где <em>живёт вкус</em></h1>
+          <p>Мы открылись в 2018 году с простой идеей: готовить так, как готовят дома — с любовью, из хороших продуктов, без лишней суеты. Сегодня Maison — это место, куда возвращаются.</p>
+        </div>
+        <div class="about-hero__image" aria-hidden="true">
+          <div class="about-hero__image-placeholder"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="about-values section">
+    <div class="container">
+      <p class="eyebrow">Наши принципы</p>
+      <div class="about-values-grid">
+        <div class="about-value">
+          <h3>Честные продукты</h3>
+          <p>Мы работаем с фермерами, которых знаем лично. Молоко, мясо, овощи — всё с историей и конкретным адресом.</p>
+        </div>
+        <div class="about-value">
+          <h3>Сезонное меню</h3>
+          <p>Меню меняется четыре раза в год. Мы не замораживаем и не готовим заранее — только то, что сейчас в пике.</p>
+        </div>
+        <div class="about-value">
+          <h3>Живая атмосфера</h3>
+          <p>Никаких скриптов и заученных фраз. Наши официанты — часть команды и знают каждое блюдо изнутри.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-team section">
+    <div class="container">
+      <p class="eyebrow">Команда</p>
+      <h2>Люди, которые делают Maison</h2>
+      <div class="team-grid">
+        <article class="team-card">
+          <div class="team-card__avatar" aria-hidden="true">👨‍🍳</div>
+          <div class="team-card__info">
+            <h3>Михаил Дорофеев</h3>
+            <p class="team-card__role">Шеф-повар</p>
+            <p>15 лет в профессии, стажировки во Франции и Японии. Убеждён, что лучший соус — это правильное время.</p>
+          </div>
+        </article>
+        <article class="team-card">
+          <div class="team-card__avatar" aria-hidden="true">🥂</div>
+          <div class="team-card__info">
+            <h3>Елена Волкова</h3>
+            <p class="team-card__role">Сомелье</p>
+            <p>Подбирает вино так, чтобы оно не перебивало блюдо, а продолжало его. Любит натуральные вина.</p>
+          </div>
+        </article>
+        <article class="team-card">
+          <div class="team-card__avatar" aria-hidden="true">🌿</div>
+          <div class="team-card__info">
+            <h3>Арина Белова</h3>
+            <p class="team-card__role">Су-шеф</p>
+            <p>Отвечает за заготовки и ферментацию. В холодильнике Arины всегда что-то бродит и созревает.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-contacts section">
+    <div class="container">
+      <div class="contacts-grid">
+        <div class="contacts-info">
+          <p class="eyebrow">Как нас найти</p>
+          <h2>Контакты</h2>
+          <dl class="contacts-list">
+            <div class="contacts-item">
+              <dt>Адрес</dt>
+              <dd>ул. Примерная, 1, Москва</dd>
+            </div>
+            <div class="contacts-item">
+              <dt>Телефон</dt>
+              <dd><a href="tel:+70000000000">+7 000 000-00-00</a></dd>
+            </div>
+            <div class="contacts-item">
+              <dt>Email</dt>
+              <dd><a href="mailto:hello@maison.restaurant">hello@maison.restaurant</a></dd>
+            </div>
+            <div class="contacts-item">
+              <dt>Часы работы</dt>
+              <dd>
+                <span>Пн–Пт: 12:00–23:00</span><br/>
+                <span>Сб–Вс: 11:00–00:00</span>
+              </dd>
+            </div>
+          </dl>
+          <div class="contacts-actions">
+            <a href="/reserve" class="btn btn--accent">Забронировать столик</a>
+          </div>
+        </div>
+        <div class="contacts-map" aria-label="Карта расположения">
+          <div class="contacts-map__placeholder" aria-hidden="true">
+            <span>Карта</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>

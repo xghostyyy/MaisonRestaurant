@@ -9,6 +9,7 @@ import fastifyHelmet from '@fastify/helmet'
 import fastifyView from '@fastify/view'
 import { Eta } from 'eta'
 import { config } from './src/config.js'
+import publicRoutes from './src/routes/public.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -72,9 +73,7 @@ await app.register(fastifyView, {
 })
 
 // Routes
-app.get('/', async (_req, reply) => {
-  return reply.view('pages/index', { title: 'Maison — Ресторан' })
-})
+await app.register(publicRoutes)
 
 // 404 handler
 app.setNotFoundHandler(async (_req, reply) => {
