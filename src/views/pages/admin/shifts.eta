@@ -3,6 +3,12 @@
   <button class="btn btn--accent" onclick="document.getElementById('add-shift-dialog').showModal()">+ Смена</button>
 </div>
 
+<% if (it.error) { %>
+<div style="background:var(--burgundy);color:white;border-radius:var(--radius-md);padding:var(--space-3) var(--space-4);margin-bottom:var(--space-4)">
+  <%= it.error %>
+</div>
+<% } %>
+
 <div class="data-table-wrap">
   <table class="data-table">
     <thead><tr><th>Сотрудник</th><th>Роль</th><th>Начало</th><th>Конец</th><th>Примечание</th><th></th></tr></thead>

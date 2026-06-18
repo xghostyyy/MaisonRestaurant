@@ -57,6 +57,14 @@ const stmtUpdateShift = db.prepare(`
   WHERE id=@id
 `)
 const stmtDeleteShift = db.prepare(`DELETE FROM shifts WHERE id=?`)
+const stmtOverlap = db.prepare(`
+  SELECT COUNT(*) AS cnt FROM shifts
+  WHERE user_id=@userId AND id != @excludeId
+    AND starts_at < @endsAt AND ends_at > @startsAt
+`)
+const stmtForceChangePassword = db.prepare(
+  `UPDATE users SET password_hash=@passwordHash, must_change_password=1 WHERE id=@id`
+)
 
 // ---- Users ----
 
@@ -125,4 +133,12 @@ export function updateShift(data) {
 
 export function deleteShift(id) {
   stmtDeleteShift.run(id)
+}
+
+export function hasShiftOverlap(userId, startsAt, endsAt, excludeId = '') {
+  return stmtOverlap.get({ userId, startsAt, endsAt, excludeId }).cnt > 0
+}
+
+export function resetPassword(id, passwordHash) {
+  stmtForceChangePassword.run({ id, passwordHash })
 }

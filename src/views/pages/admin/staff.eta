@@ -3,7 +3,11 @@
   <button class="btn btn--accent" onclick="document.getElementById('add-staff-dialog').showModal()">+ Добавить</button>
 </div>
 
-<% if (it.flash) { %><div class="alert alert--success" style="margin-bottom:var(--space-4)"><%= it.flash %></div><% } %>
+<% if (it.flash) { %>
+<div style="background:var(--olive);color:white;border-radius:var(--radius-md);padding:var(--space-4);margin-bottom:var(--space-4);font-family:var(--font-mono, monospace);font-size:var(--text-sm)">
+  ⚠ <%= it.flash %> — скопируйте пароль, он показывается только один раз
+</div>
+<% } %>
 
 <div class="data-table-wrap">
   <table class="data-table">
@@ -15,10 +19,14 @@
         <td><%= u.email %></td>
         <td><%= {ADMIN:'Управляющий',HOST:'Хостес',WAITER:'Официант',CHEF:'Шеф-повар'}[u.role]||u.role %></td>
         <td><span class="badge badge--<%= u.is_active ? 'confirmed' : 'cancelled' %>"><%= u.is_active ? 'Активен' : 'Неактивен' %></span></td>
-        <td>
+        <td style="white-space:nowrap">
+          <form method="post" action="/admin/staff/<%= u.id %>/reset-password" style="display:inline"
+                onsubmit="return confirm('Сбросить пароль для <%= u.name %>?')">
+            <button type="submit" class="btn btn--ghost btn--sm">Сброс пароля</button>
+          </form>
           <% if (u.is_active && u.id !== it.user.id) { %>
           <form method="post" action="/admin/staff/<%= u.id %>/deactivate" style="display:inline"
-            onsubmit="return confirm('Деактивировать ' + '<%= u.name %>?')">
+                onsubmit="return confirm('Деактивировать <%= u.name %>?')">
             <button type="submit" class="btn btn--danger btn--sm">Деактив.</button>
           </form>
           <% } %>

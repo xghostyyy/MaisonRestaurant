@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { requireAuth, requireRole } from '../auth.js'
-import { listAllStaff, createUser, updateUser, deactivateUser, listShiftsByDate, createShift, deleteShift, findUserById } from '../services/staff.js'
+import { listAllStaff, createUser, updateUser, deactivateUser, listShiftsByDate, createShift, deleteShift, findUserById, hasShiftOverlap, resetPassword } from '../services/staff.js'
+import { updatePassword } from '../services/staff.js'
 import { getSettings, updateSettings } from '../services/settings.js'
 import { listActiveTables, listAllTables, saveFloorLayout } from '../services/tables.js'
 import { getTipsReport } from '../services/tips.js'
@@ -42,12 +43,15 @@ export default async function adminRoutes(app) {
 
   app.get('/admin/staff', { preHandler: [authHook, roleHook] }, async (req, reply) => {
     const staff = listAllStaff()
+    const flash = req.session.staffFlash || null
+    delete req.session.staffFlash
     return reply.view('pages/admin/staff', {
       title: 'Персонал — Maison',
       pageTitle: 'Персонал',
       user: req.user,
       activeSection: 'staff',
       staff,
+      flash,
     }, { layout: 'layout-staff' })
   })
 
@@ -56,7 +60,8 @@ export default async function adminRoutes(app) {
     const tempPassword = randomBytes(8).toString('hex')
     const passwordHash = await hashPassword(tempPassword)
     createUser({ id: cuid(), role, name, email, passwordHash, phone: phone || null, mustChangePassword: 1 })
-    return reply.redirect('/admin/staff?created=1')
+    req.session.staffFlash = `Сотрудник ${name} создан. Временный пароль: ${tempPassword}`
+    return reply.redirect('/admin/staff')
   })
 
   app.post('/admin/staff/:id', { preHandler: [authHook, roleHook] }, async (req, reply) => {
@@ -67,6 +72,15 @@ export default async function adminRoutes(app) {
 
   app.post('/admin/staff/:id/deactivate', { preHandler: [authHook, roleHook] }, async (req, reply) => {
     deactivateUser(req.params.id)
+    return reply.redirect('/admin/staff')
+  })
+
+  app.post('/admin/staff/:id/reset-password', { preHandler: [authHook, roleHook] }, async (req, reply) => {
+    const tempPassword = randomBytes(8).toString('hex')
+    const passwordHash = await hashPassword(tempPassword)
+    resetPassword(req.params.id, passwordHash)
+    const user = findUserById(req.params.id)
+    req.session.staffFlash = `Пароль сотрудника ${user?.name || req.params.id} сброшен. Новый пароль: ${tempPassword}`
     return reply.redirect('/admin/staff')
   })
 
@@ -88,6 +102,24 @@ export default async function adminRoutes(app) {
 
   app.post('/admin/shifts', { preHandler: [authHook, roleHook] }, async (req, reply) => {
     const { userId, startsAt, endsAt, role, notes } = req.body
+    if (!userId || !startsAt || !endsAt) return reply.redirect('/admin/shifts?error=missing')
+    if (new Date(startsAt) >= new Date(endsAt)) return reply.redirect('/admin/shifts?error=order')
+
+    if (hasShiftOverlap(userId, startsAt, endsAt)) {
+      const weekStart = req.query.week || new Date().toISOString().slice(0, 10)
+      const weekEnd = new Date(new Date(weekStart).getTime() + 7 * 86400000).toISOString().slice(0, 10)
+      const shifts = listShiftsByDate(`${weekStart}T00:00:00`, `${weekEnd}T23:59:59`)
+      const staff = listAllStaff()
+      return reply.status(409).view('pages/admin/shifts', {
+        title: 'Расписание — Maison',
+        pageTitle: 'Расписание смен',
+        user: req.user,
+        activeSection: 'admin-shifts',
+        shifts, staff, weekStart,
+        error: 'У этого сотрудника уже есть пересекающаяся смена в это время',
+      }, { layout: 'layout-staff' })
+    }
+
     createShift({ id: cuid(), userId, startsAt, endsAt, role, notes: notes || null })
     return reply.redirect('/admin/shifts')
   })
