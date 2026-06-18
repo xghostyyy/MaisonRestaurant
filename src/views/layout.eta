@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= it.title || 'Maison' %></title>
+    <meta name="description" content="<%= it.description || 'Ресторан Maison — место, где каждый ужин становится событием' %>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,300&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/tokens.css" />
+    <link rel="stylesheet" href="/css/base.css" />
+    <link rel="stylesheet" href="/css/components.css" />
+    <% if (it.pageCSS) { %>
+    <link rel="stylesheet" href="/css/pages/<%= it.pageCSS %>.css" />
+    <% } %>
+  </head>
+  <body class="<%= it.bodyClass || '' %>">
+
+    <header class="site-header">
+      <div class="container">
+        <nav class="nav-main" aria-label="Основная навигация">
+          <a href="/" class="nav-logo" aria-label="Maison — на главную">
+            <span class="nav-logo__text">Maison</span>
+          </a>
+          <button class="nav-toggle" aria-label="Открыть меню" aria-expanded="false" aria-controls="nav-menu">
+            <span></span><span></span><span></span>
+          </button>
+          <ul class="nav-links" id="nav-menu" role="list">
+            <li><a href="/menu">Меню</a></li>
+            <li><a href="/about">О нас</a></li>
+            <li>
+              <% if (it.user) { %>
+              <a href="/<%= it.user.role.toLowerCase() %>" class="btn btn--ghost">Кабинет</a>
+              <% } else { %>
+              <a href="/reserve" class="btn btn--accent">Забронировать</a>
+              <% } %>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <%~ it.body %>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <p class="footer-logo">Maison</p>
+            <p class="footer-tagline">Место, где каждый ужин<br/>становится событием</p>
+          </div>
+          <nav aria-label="Ссылки в подвале">
+            <ul class="footer-links" role="list">
+              <li><a href="/menu">Меню</a></li>
+              <li><a href="/about">О нас</a></li>
+              <li><a href="/reserve">Забронировать</a></li>
+            </ul>
+          </nav>
+          <div class="footer-contacts">
+            <p>ул. Примерная, 1</p>
+            <p><a href="tel:+70000000000">+7 000 000-00-00</a></p>
+            <p>Пн–Пт 12:00–23:00</p>
+            <p>Сб–Вс 11:00–00:00</p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© <%= it.year %> Maison. Все права защищены.</p>
+          <a href="/login" class="footer-staff-link">Вход для персонала</a>
+        </div>
+      </div>
+    </footer>
+
+    <div id="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+    <script type="module" src="/js/main.js"></script>
+    <% if (it.pageJS) { %>
+    <script type="module" src="/js/<%= it.pageJS %>.js"></script>
+    <% } %>
+  </body>
+</html>

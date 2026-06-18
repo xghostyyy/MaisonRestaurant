@@ -1,0 +1,51 @@
+<section class="hero" aria-label="Добро пожаловать в Maison">
+  <div class="hero__inner container">
+    <div class="hero__content">
+      <p class="eyebrow">Ресторан Maison</p>
+      <h1 class="hero__title">Еда, которая<br/><em>говорит сама</em></h1>
+      <p class="hero__desc">Авторская кухня с характером. Живая атмосфера, честные продукты, вечер, который запомнится.</p>
+      <div class="hero__actions">
+        <a href="/reserve" class="btn btn--accent btn--lg">Забронировать столик</a>
+        <a href="/menu" class="btn btn--ghost btn--lg">Смотреть меню</a>
+      </div>
+    </div>
+    <div class="hero__image" aria-hidden="true">
+      <div class="hero__image-placeholder"></div>
+    </div>
+  </div>
+</section>
+
+<section class="values section" aria-label="Наши ценности">
+  <div class="container">
+    <p class="eyebrow text-center">Почему Maison</p>
+    <div class="values-grid">
+      <article class="value-card">
+        <div class="value-card__icon" aria-hidden="true">🌿</div>
+        <h3>Сезонные продукты</h3>
+        <p>Меню меняется вместе с природой. Только то, что сейчас в лучшей форме.</p>
+      </article>
+      <article class="value-card">
+        <div class="value-card__icon" aria-hidden="true">🍷</div>
+        <h3>Живая атмосфера</h3>
+        <p>Тихий зал, хорошая музыка, внимательный сервис без суеты.</p>
+      </article>
+      <article class="value-card">
+        <div class="value-card__icon" aria-hidden="true">👨‍🍳</div>
+        <h3>Авторская кухня</h3>
+        <p>Шеф-повар с характером. Каждое блюдо — это история и точка зрения.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section section">
+  <div class="container">
+    <div class="cta-box">
+      <div class="cta-box__text">
+        <h2>Забронируйте столик<br/>на этот вечер</h2>
+        <p>Выбирайте дату, время и размер компании. Подтверждение придёт на почту.</p>
+      </div>
+      <a href="/reserve" class="btn btn--accent btn--lg">Выбрать время</a>
+    </div>
+  </div>
+</section>

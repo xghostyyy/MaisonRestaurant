@@ -1,0 +1,9 @@
+node_modules/
+data/app.db
+data/app.db-shm
+data/app.db-wal
+public/uploads/
+.env
+*.log
+.DS_Store
+Thumbs.db

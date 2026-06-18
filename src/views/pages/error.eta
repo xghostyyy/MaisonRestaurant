@@ -1,0 +1,8 @@
+<section class="error-page section">
+  <div class="container error-page__inner">
+    <p class="error-page__code">⚠</p>
+    <h1 class="error-page__title">Что-то пошло не так</h1>
+    <p class="error-page__text"><%= it.message || 'Мы уже разбираемся. Попробуйте вернуться чуть позже.' %></p>
+    <a href="/" class="btn btn--accent">На главную</a>
+  </div>
+</section>
