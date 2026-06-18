@@ -7,12 +7,23 @@
 <div class="data-table-wrap">
   <table class="data-table">
     <thead>
-      <tr><th>Название</th><th>Категория</th><th>Цена</th><th>Теги</th><th>Статус</th><th>Действия</th></tr>
+      <tr><th style="width:60px"></th><th>Название</th><th>Категория</th><th>Цена</th><th>Теги</th><th>Статус</th><th>Действия</th></tr>
     </thead>
     <tbody>
       <% it.items.forEach(item => { %>
       <tr>
-        <td><strong><%= item.name %></strong><br/><small style="color:var(--ink-soft)"><%= item.description ? item.description.slice(0,60)+'…' : '' %></small></td>
+        <td>
+          <% if (item.thumb_url) { %>
+          <img src="<%= item.thumb_url %>" alt="" width="48" height="48"
+               style="object-fit:cover;border-radius:var(--radius-sm);display:block" loading="lazy" />
+          <% } else { %>
+          <div style="width:48px;height:48px;background:var(--cream);border-radius:var(--radius-sm);border:1px solid var(--border-soft)"></div>
+          <% } %>
+        </td>
+        <td>
+          <strong><%= item.name %></strong>
+          <% if (item.description) { %><br/><small style="color:var(--ink-soft)"><%= item.description.slice(0,60) %><%= item.description.length>60?'…':'' %></small><% } %>
+        </td>
         <td><%= item.category_name %></td>
         <td class="price"><%= (item.price_cents/100).toFixed(0) %> ₽</td>
         <td>
@@ -25,7 +36,11 @@
             <%= item.is_available ? 'В наличии' : 'Стоп-лист' %>
           </span>
         </td>
-        <td>
+        <td style="white-space:nowrap">
+          <button class="btn btn--ghost btn--sm"
+                  onclick="openEditDialog('<%= item.id %>','<%= item.name.replace(/'/g,&quot;\\'&quot;) %>','<%= item.description?.replace(/'/g,&quot;\\'&quot;)||'' %>','<%= item.price_cents %>','<%= item.category_id %>','<%= item.is_vegan %>','<%= item.is_vegetarian %>','<%= item.is_gluten_free %>','<%= item.allergens||'' %>','<%= item.sort_order %>')">
+            Изменить
+          </button>
           <form method="post" action="/chef/menu/<%= item.id %>/stop" style="display:inline">
             <button type="submit" class="btn btn--ghost btn--sm">
               <%= item.is_available ? 'В стоп' : 'Вернуть' %>
@@ -34,14 +49,17 @@
         </td>
       </tr>
       <% }) %>
+      <% if (it.items.length === 0) { %>
+      <tr><td colspan="7" style="text-align:center;padding:var(--space-8);color:var(--ink-soft)">Меню пустое</td></tr>
+      <% } %>
     </tbody>
   </table>
 </div>
 
 <!-- Add item dialog -->
-<dialog id="add-item-dialog" style="border:none;border-radius:var(--radius-xl);padding:var(--space-8);max-width:500px;width:90vw">
+<dialog id="add-item-dialog" class="menu-dialog">
   <h2 style="margin-bottom:var(--space-6)">Новое блюдо</h2>
-  <form method="post" action="/chef/menu">
+  <form method="post" action="/chef/menu" enctype="multipart/form-data">
     <div class="form-group">
       <label class="form-label form-label--required" for="item-name">Название</label>
       <input type="text" id="item-name" name="name" class="form-input" required />
@@ -64,6 +82,14 @@
         </select>
       </div>
     </div>
+    <div class="form-group">
+      <label class="form-label">Фото блюда (webp/jpg/png, до 5 МБ)</label>
+      <input type="file" name="image" accept="image/*" class="form-input" style="padding:var(--space-2)" />
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="item-allergens">Аллергены (через запятую)</label>
+      <input type="text" id="item-allergens" name="allergens" class="form-input" placeholder="nuts, dairy, gluten" />
+    </div>
     <div style="display:flex;gap:var(--space-4);flex-wrap:wrap;margin-bottom:var(--space-4)">
       <label><input type="checkbox" name="isVegan" value="1" /> Веган</label>
       <label><input type="checkbox" name="isVegetarian" value="1" /> Вегетарианское</label>
@@ -75,3 +101,82 @@
     </div>
   </form>
 </dialog>
+
+<!-- Edit item dialog -->
+<dialog id="edit-item-dialog" class="menu-dialog">
+  <h2 style="margin-bottom:var(--space-6)">Изменить блюдо</h2>
+  <form id="edit-item-form" method="post" action="" enctype="multipart/form-data">
+    <div class="form-group">
+      <label class="form-label form-label--required">Название</label>
+      <input type="text" id="edit-name" name="name" class="form-input" required />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Описание</label>
+      <textarea id="edit-desc" name="description" class="form-textarea" rows="2"></textarea>
+    </div>
+    <div class="form-row form-row--2">
+      <div class="form-group">
+        <label class="form-label">Цена (₽)</label>
+        <input type="number" id="edit-price" name="price" class="form-input" min="0" step="0.01" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Категория</label>
+        <select id="edit-cat" name="categoryId" class="form-select">
+          <% it.categories.forEach(c => { %>
+          <option value="<%= c.id %>"><%= c.name %></option>
+          <% }) %>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Новое фото (оставьте пустым чтобы сохранить текущее)</label>
+      <input type="file" name="image" accept="image/*" class="form-input" style="padding:var(--space-2)" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Аллергены</label>
+      <input type="text" id="edit-allergens" name="allergens" class="form-input" />
+    </div>
+    <div style="display:flex;gap:var(--space-4);flex-wrap:wrap;margin-bottom:var(--space-4)">
+      <label><input type="checkbox" id="edit-vegan" name="isVegan" value="1" /> Веган</label>
+      <label><input type="checkbox" id="edit-veg" name="isVegetarian" value="1" /> Вегетарианское</label>
+      <label><input type="checkbox" id="edit-gf" name="isGlutenFree" value="1" /> Без глютена</label>
+    </div>
+    <input type="hidden" id="edit-isAvailable" name="isAvailable" value="1" />
+    <div style="display:flex;gap:var(--space-3)">
+      <button type="submit" class="btn btn--accent">Сохранить</button>
+      <button type="button" class="btn btn--ghost" onclick="this.closest('dialog').close()">Отмена</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+function openEditDialog(id, name, description, priceCents, categoryId, isVegan, isVeg, isGf, allergens, sortOrder) {
+  const dialog = document.getElementById('edit-item-dialog')
+  const form = document.getElementById('edit-item-form')
+  form.action = '/chef/menu/' + id
+  document.getElementById('edit-name').value = name
+  document.getElementById('edit-desc').value = description
+  document.getElementById('edit-price').value = (parseInt(priceCents) / 100).toFixed(2)
+  document.getElementById('edit-allergens').value = allergens
+  document.getElementById('edit-vegan').checked = isVegan === '1'
+  document.getElementById('edit-veg').checked = isVeg === '1'
+  document.getElementById('edit-gf').checked = isGf === '1'
+  const catSel = document.getElementById('edit-cat')
+  if (catSel) {
+    for (const opt of catSel.options) opt.selected = opt.value === categoryId
+  }
+  dialog.showModal()
+}
+</script>
+
+<style>
+.menu-dialog {
+  border: none;
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  max-width: 520px;
+  width: 90vw;
+  box-shadow: var(--shadow-lg);
+}
+.menu-dialog::backdrop { background: rgba(0,0,0,0.4) }
+</style>

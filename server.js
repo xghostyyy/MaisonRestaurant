@@ -8,6 +8,7 @@ import fastifySession from '@fastify/session'
 import fastifyHelmet from '@fastify/helmet'
 import fastifyView from '@fastify/view'
 import fastifyRateLimit from '@fastify/rate-limit'
+import fastifyMultipart from '@fastify/multipart'
 import { Eta } from 'eta'
 import { config } from './src/config.js'
 import publicRoutes from './src/routes/public.js'
@@ -60,6 +61,11 @@ await app.register(fastifyRateLimit, {
 
 // Form body parser
 await app.register(fastifyFormbody)
+
+// Multipart (for file uploads — chef menu photos)
+await app.register(fastifyMultipart, {
+  limits: { fileSize: 5 * 1024 * 1024, files: 1 },
+})
 
 // Cookies
 await app.register(fastifyCookie)
