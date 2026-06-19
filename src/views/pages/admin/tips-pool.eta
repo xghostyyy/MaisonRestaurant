@@ -1,4 +1,4 @@
-<div class="staff-page-header">
+﻿<div class="staff-page-header">
   <h1>Пул чаевых</h1>
 </div>
 
@@ -70,6 +70,7 @@
   </p>
   <form method="post" action="/admin/tips/pool/<%= it.date %>/distribute"
         onsubmit="return confirm('Распределить пул чаевых за <%= it.date %>? Это действие необратимо.')">
+    <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
     <button type="submit" class="btn btn--accent">Распределить</button>
   </form>
 </div>

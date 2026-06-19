@@ -1,4 +1,4 @@
-<div class="staff-page-header">
+﻿<div class="staff-page-header">
   <h1>Управление меню</h1>
   <button class="btn btn--accent" onclick="document.getElementById('add-item-dialog').showModal()">+ Добавить блюдо</button>
 </div>
@@ -42,6 +42,7 @@
             Изменить
           </button>
           <form method="post" action="/chef/menu/<%= item.id %>/stop" style="display:inline">
+            <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
             <button type="submit" class="btn btn--ghost btn--sm">
               <%= item.is_available ? 'В стоп' : 'Вернуть' %>
             </button>
@@ -60,6 +61,7 @@
 <dialog id="add-item-dialog" class="menu-dialog">
   <h2 style="margin-bottom:var(--space-6)">Новое блюдо</h2>
   <form method="post" action="/chef/menu" enctype="multipart/form-data">
+    <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
     <div class="form-group">
       <label class="form-label form-label--required" for="item-name">Название</label>
       <input type="text" id="item-name" name="name" class="form-input" required />
@@ -106,6 +108,7 @@
 <dialog id="edit-item-dialog" class="menu-dialog">
   <h2 style="margin-bottom:var(--space-6)">Изменить блюдо</h2>
   <form id="edit-item-form" method="post" action="" enctype="multipart/form-data">
+    <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
     <div class="form-group">
       <label class="form-label form-label--required">Название</label>
       <input type="text" id="edit-name" name="name" class="form-input" required />

@@ -1,4 +1,4 @@
-<div class="page-reserve-manage">
+﻿<div class="page-reserve-manage">
   <header class="page-header section--sm">
     <div class="container">
       <p class="eyebrow">Управление бронью</p>
@@ -77,6 +77,7 @@
               <div class="alert alert--error" role="alert"><%= it.editError %></div>
               <% } %>
               <form method="post" action="/reserve/<%= r.manage_token %>/edit">
+                <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
                 <div class="form-row form-row--2">
                   <div class="form-group">
                     <label class="form-label form-label--required" for="edit-name">Имя</label>
@@ -126,6 +127,7 @@
           <!-- Cancel -->
           <form method="post" action="/reserve/<%= r.manage_token %>/cancel"
             onsubmit="return confirm('Вы уверены, что хотите отменить бронь?')">
+            <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
             <button type="submit" class="btn btn--danger btn--sm">Отменить бронь</button>
           </form>
         </div>

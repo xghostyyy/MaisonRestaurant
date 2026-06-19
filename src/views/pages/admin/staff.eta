@@ -4,7 +4,7 @@
 </div>
 
 <% if (it.flash) { %>
-<div style="background:var(--olive);color:white;border-radius:var(--radius-md);padding:var(--space-4);margin-bottom:var(--space-4);font-family:var(--font-mono, monospace);font-size:var(--text-sm)">
+<div style="background:var(--olive);color:white;border-radius:var(--radius-md);padding:var(--space-4);margin-bottom:var(--space-4);font-family:monospace;font-size:var(--text-sm)">
   ⚠ <%= it.flash %> — скопируйте пароль, он показывается только один раз
 </div>
 <% } %>
@@ -22,11 +22,13 @@
         <td style="white-space:nowrap">
           <form method="post" action="/admin/staff/<%= u.id %>/reset-password" style="display:inline"
                 onsubmit="return confirm('Сбросить пароль для <%= u.name %>?')">
+            <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
             <button type="submit" class="btn btn--ghost btn--sm">Сброс пароля</button>
           </form>
           <% if (u.is_active && u.id !== it.user.id) { %>
           <form method="post" action="/admin/staff/<%= u.id %>/deactivate" style="display:inline"
                 onsubmit="return confirm('Деактивировать <%= u.name %>?')">
+            <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
             <button type="submit" class="btn btn--danger btn--sm">Деактив.</button>
           </form>
           <% } %>
@@ -40,6 +42,7 @@
 <dialog id="add-staff-dialog" style="border:none;border-radius:var(--radius-xl);padding:var(--space-8);max-width:480px;width:90vw">
   <h2 style="margin-bottom:var(--space-6)">Новый сотрудник</h2>
   <form method="post" action="/admin/staff">
+    <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
     <div class="form-group">
       <label class="form-label form-label--required" for="s-name">Имя</label>
       <input type="text" id="s-name" name="name" class="form-input" required />

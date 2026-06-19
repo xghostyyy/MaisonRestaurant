@@ -1,4 +1,4 @@
-<div class="staff-page-header">
+﻿<div class="staff-page-header">
   <h1>Мои столы</h1>
   <span class="badge badge--confirmed"><%= it.todayStr %></span>
 </div>
@@ -17,6 +17,7 @@
           <td><%= new Date(v.seated_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) %></td>
           <td>
             <form method="post" action="/waiter/visits/<%= v.id %>/open">
+              <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
               <button type="submit" class="btn btn--accent btn--sm">Взять стол</button>
             </form>
           </td>
@@ -48,6 +49,7 @@
             <details>
               <summary class="btn btn--primary btn--sm">Закрыть визит</summary>
               <form method="post" action="/waiter/visits/<%= v.id %>/close" style="padding:var(--space-4);background:var(--cream);border-radius:var(--radius-md);margin-top:var(--space-2)">
+                <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
                 <div class="form-row form-row--2" style="margin-bottom:var(--space-3)">
                   <div class="form-group" style="margin-bottom:0">
                     <label class="form-label" for="bill-<%= v.id %>">Счёт (₽)</label>

@@ -1,4 +1,4 @@
-<nav class="staff-nav" aria-label="Навигация сотрудника">
+﻿<nav class="staff-nav" aria-label="Навигация сотрудника">
   <div class="staff-nav__user">
     <p class="staff-nav__name"><%= it.user.name %></p>
     <p class="staff-nav__role"><%= {'ADMIN':'Управляющий','HOST':'Хостес','WAITER':'Официант','CHEF':'Шеф-повар'}[it.user.role] || it.user.role %></p>
@@ -29,6 +29,7 @@
   </ul>
 
   <form method="post" action="/logout" class="staff-nav__logout">
+    <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
     <button type="submit" class="btn btn--ghost btn--sm">Выйти</button>
   </form>
 </nav>

@@ -9,6 +9,7 @@ import fastifyHelmet from '@fastify/helmet'
 import fastifyView from '@fastify/view'
 import fastifyRateLimit from '@fastify/rate-limit'
 import fastifyMultipart from '@fastify/multipart'
+import fastifyCsrf from '@fastify/csrf-protection'
 import { Eta } from 'eta'
 import { config } from './src/config.js'
 import publicRoutes from './src/routes/public.js'
@@ -82,6 +83,9 @@ await app.register(fastifySession, {
   saveUninitialized: false,
 })
 
+// CSRF protection (must be after session)
+await app.register(fastifyCsrf, { sessionPlugin: '@fastify/session' })
+
 // Eta template engine
 const eta = new Eta({ views: join(__dirname, 'src/views'), cache: config.isProd })
 await app.register(fastifyView, {
@@ -91,6 +95,31 @@ await app.register(fastifyView, {
   defaultContext: {
     year: new Date().getFullYear(),
   },
+})
+
+// Auto-inject csrfToken into all reply.view calls
+app.addHook('preHandler', async (req, reply) => {
+  const _view = reply.view.bind(reply)
+  reply.view = async function (template, data = {}, opts) {
+    let csrfToken = ''
+    try { csrfToken = await reply.generateCsrf() } catch { /* skip if session not ready */ }
+    return _view(template, { csrfToken, ...data }, opts)
+  }
+})
+
+// Validate CSRF on all mutating requests except /api/* (JSON API)
+app.addHook('preValidation', async (req, reply) => {
+  if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return
+  if (req.url.startsWith('/api/')) return
+  try {
+    await req.csrfProtection()
+  } catch {
+    const status = reply.statusCode === 200 ? 403 : reply.statusCode
+    return reply.status(status).view('pages/error', {
+      title: 'Ошибка безопасности',
+      message: 'Недействительный или отсутствующий CSRF-токен. Обновите страницу и попробуйте снова.',
+    })
+  }
 })
 
 // Routes

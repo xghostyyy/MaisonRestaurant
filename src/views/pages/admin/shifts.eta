@@ -1,4 +1,4 @@
-<div class="staff-page-header">
+﻿<div class="staff-page-header">
   <h1>Расписание смен</h1>
   <button class="btn btn--accent" onclick="document.getElementById('add-shift-dialog').showModal()">+ Смена</button>
 </div>
@@ -22,6 +22,7 @@
         <td><%= s.notes||'–' %></td>
         <td>
           <form method="post" action="/admin/shifts/<%= s.id %>/delete">
+            <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
             <button type="submit" class="btn btn--danger btn--sm">✕</button>
           </form>
         </td>
@@ -37,6 +38,7 @@
 <dialog id="add-shift-dialog" style="border:none;border-radius:var(--radius-xl);padding:var(--space-8);max-width:480px;width:90vw">
   <h2 style="margin-bottom:var(--space-6)">Новая смена</h2>
   <form method="post" action="/admin/shifts">
+    <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
     <div class="form-group">
       <label class="form-label form-label--required" for="sh-user">Сотрудник</label>
       <select id="sh-user" name="userId" class="form-select" required>

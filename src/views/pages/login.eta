@@ -8,6 +8,7 @@
     <% } %>
 
     <form class="login-form" method="post" action="/login" novalidate>
+      <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
       <div class="form-group">
         <label class="form-label form-label--required" for="email">Email</label>
         <input

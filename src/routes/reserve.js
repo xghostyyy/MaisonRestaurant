@@ -56,8 +56,16 @@ export default async function reserveRoutes(app) {
     })
   })
 
-  // POST /reserve — create reservation
-  app.post('/reserve', async (req, reply) => {
+  // POST /reserve — create reservation (rate-limited: 10/hour per IP)
+  app.post('/reserve', {
+    config: {
+      rateLimit: {
+        max: 10,
+        timeWindow: '1 hour',
+        keyGenerator: (req) => `reserve:${req.ip}`,
+      },
+    },
+  }, async (req, reply) => {
     const result = ReserveSchema.safeParse(req.body)
     if (!result.success) {
       const settings = getSettings()

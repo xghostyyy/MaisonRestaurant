@@ -1,4 +1,4 @@
-<div class="staff-page-header">
+﻿<div class="staff-page-header">
   <h1>План зала</h1>
   <span class="badge badge--confirmed"><%= it.todayStr %></span>
 </div>
@@ -56,9 +56,11 @@
           <td><%= r.table_label || '–' %></td>
           <td style="display:flex;gap:var(--space-2);flex-wrap:wrap;padding:var(--space-2) var(--space-4)">
             <form method="post" action="/host/reservations/<%= r.id %>/confirm">
+              <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
               <button type="submit" class="btn btn--primary btn--sm">Подтвердить</button>
             </form>
             <form method="post" action="/host/reservations/<%= r.id %>/reject">
+              <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
               <input type="hidden" name="reason" value="Нет мест" />
               <button type="submit" class="btn btn--danger btn--sm">Отклонить</button>
             </form>
@@ -87,6 +89,7 @@
           <td><%= r.table_label || '?' %></td>
           <td>
             <form method="post" action="/host/reservations/<%= r.id %>/seat">
+              <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
               <input type="hidden" name="tableId" value="<%= r.table_id || '' %>" />
               <button type="submit" class="btn btn--accent btn--sm">Посадить</button>
             </form>
@@ -103,6 +106,7 @@
 <section class="staff-section" style="margin-top:var(--space-6)">
   <h2 class="staff-section-title">Walk-in</h2>
   <form method="post" action="/host/walkins" class="walkin-form">
+    <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
     <div class="form-row form-row--2">
       <div class="form-group" style="margin-bottom:0">
         <label class="form-label" for="walkin-table">Стол</label>
@@ -142,6 +146,7 @@
           <td style="font-size:var(--text-xs);color:var(--ink-soft)"><%= new Date(w.created_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}) %></td>
           <td>
             <form method="post" action="/host/waitlist/<%= w.id %>/resolve">
+              <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
               <button type="submit" class="btn btn--ghost btn--sm">Разрешить</button>
             </form>
           </td>
@@ -157,6 +162,7 @@
   <details>
     <summary class="btn btn--ghost btn--sm" style="cursor:pointer;list-style:none;display:inline-flex">+ Добавить в лист ожидания</summary>
     <form method="post" action="/host/waitlist" style="margin-top:var(--space-4);display:grid;grid-template-columns:1fr 1fr auto auto;gap:var(--space-3);align-items:end">
+      <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
       <div class="form-group" style="margin:0">
         <label class="form-label">Гость</label>
         <input type="text" name="guestName" class="form-input" placeholder="Имя" required />

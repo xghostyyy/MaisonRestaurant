@@ -1,4 +1,4 @@
-<div class="page-reserve">
+﻿<div class="page-reserve">
   <header class="page-header section--sm">
     <div class="container">
       <p class="eyebrow">Бронирование</p>
@@ -14,6 +14,7 @@
       <% } %>
 
       <form class="reserve-form" method="post" action="/reserve" novalidate>
+        <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
 
         <!-- Step 1: Date & party size -->
         <fieldset class="reserve-step" id="step-date">
