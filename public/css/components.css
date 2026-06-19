@@ -97,6 +97,26 @@
   font-size: var(--text-base);
 }
 
+/* ---- Modal dialogs ---- */
+
+dialog {
+  margin: auto; /* restore centering if a global reset zeroed margins */
+  max-height: calc(100dvh - 2 * var(--space-8));
+  color: var(--ink);
+}
+dialog::backdrop {
+  background: rgba(35, 31, 27, 0.5);
+}
+@media (prefers-reduced-motion: no-preference) {
+  dialog[open] {
+    animation: dialogIn var(--duration-normal) var(--ease-out);
+  }
+  @keyframes dialogIn {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+}
+
 /* ---- Cards ---- */
 
 .card {

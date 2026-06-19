@@ -10,7 +10,52 @@
       </div>
     </div>
     <div class="hero__image" aria-hidden="true">
-      <div class="hero__image-placeholder"></div>
+      <div class="hero__plate">
+        <svg class="hero__dish" viewBox="0 0 520 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Иллюстрация фирменного блюда">
+          <!-- steam -->
+          <g class="hero__steam" fill="none" stroke="var(--olive)" stroke-width="3" stroke-linecap="round" opacity="0.28">
+            <path d="M214 92c-14-16 10-28-4-46" />
+            <path d="M262 80c-15-17 11-30-4-50" />
+            <path d="M310 92c-14-16 10-28-4-46" />
+          </g>
+          <!-- plate -->
+          <circle cx="260" cy="290" r="196" fill="var(--white)" />
+          <circle cx="260" cy="290" r="196" fill="none" stroke="var(--saffron)" stroke-width="2.5" opacity="0.6" />
+          <circle cx="260" cy="290" r="168" fill="var(--cream)" />
+          <circle cx="260" cy="290" r="150" fill="none" stroke="var(--border)" stroke-width="1.5" />
+          <!-- sauce swoosh -->
+          <path d="M150 330 C190 250 330 250 372 322 C336 300 300 312 270 332 C238 352 196 350 150 330 Z" fill="var(--olive)" opacity="0.85" />
+          <!-- drizzle -->
+          <path d="M168 360 C214 338 300 338 356 360" fill="none" stroke="var(--burgundy)" stroke-width="3" stroke-linecap="round" opacity="0.55" />
+          <!-- seared medallions -->
+          <g>
+            <ellipse cx="232" cy="300" rx="42" ry="34" fill="var(--burgundy)" />
+            <ellipse cx="232" cy="294" rx="42" ry="30" fill="#86303D" />
+            <ellipse cx="232" cy="290" rx="34" ry="22" fill="#9B4350" opacity="0.7" />
+          </g>
+          <g>
+            <ellipse cx="300" cy="276" rx="36" ry="30" fill="var(--burgundy)" />
+            <ellipse cx="300" cy="271" rx="36" ry="26" fill="#86303D" />
+            <ellipse cx="300" cy="268" rx="28" ry="18" fill="#9B4350" opacity="0.7" />
+          </g>
+          <!-- saffron dots -->
+          <circle cx="190" cy="262" r="8" fill="var(--saffron)" />
+          <circle cx="338" cy="320" r="7" fill="var(--saffron)" />
+          <circle cx="276" cy="346" r="6" fill="var(--saffron)" />
+          <!-- microgreens -->
+          <g fill="none" stroke="var(--olive-light)" stroke-width="3.5" stroke-linecap="round">
+            <path d="M262 246c-6-14-2-26 8-34" />
+            <path d="M262 246c8-10 20-12 30-8" />
+            <path d="M320 300c2-12 12-20 24-20" />
+          </g>
+          <!-- cutlery -->
+          <g stroke="var(--ink)" stroke-width="3" stroke-linecap="round" opacity="0.45" fill="none">
+            <path d="M58 196v150" />
+            <path d="M50 196v34c0 6 16 6 16 0v-34" />
+            <path d="M462 196c14 6 14 60 0 66v84" />
+          </g>
+        </svg>
+      </div>
     </div>
   </div>
 </section>
@@ -20,17 +65,35 @@
     <p class="eyebrow text-center">Почему Maison</p>
     <div class="values-grid">
       <article class="value-card">
-        <div class="value-card__icon" aria-hidden="true">🌿</div>
+        <div class="value-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+            <path d="M2 21c0-3 1.85-5.36 5.08-6" />
+          </svg>
+        </div>
         <h3>Сезонные продукты</h3>
         <p>Меню меняется вместе с природой. Только то, что сейчас в лучшей форме.</p>
       </article>
       <article class="value-card">
-        <div class="value-card__icon" aria-hidden="true">🍷</div>
+        <div class="value-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 22h8" />
+            <path d="M12 15v7" />
+            <path d="M5.5 3h13l-1 7a5.5 5.5 0 0 1-11 0Z" />
+            <path d="M5.8 6h12.4" />
+          </svg>
+        </div>
         <h3>Живая атмосфера</h3>
         <p>Тихий зал, хорошая музыка, внимательный сервис без суеты.</p>
       </article>
       <article class="value-card">
-        <div class="value-card__icon" aria-hidden="true">👨‍🍳</div>
+        <div class="value-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 21h10" />
+            <path d="M7 21v-5h10v5" />
+            <path d="M17 16a4 4 0 0 0 1.2-7.82A4.5 4.5 0 0 0 12 5.5 4.5 4.5 0 0 0 5.8 8.18 4 4 0 0 0 7 16Z" />
+          </svg>
+        </div>
         <h3>Авторская кухня</h3>
         <p>Шеф-повар с характером. Каждое блюдо — это история и точка зрения.</p>
       </article>

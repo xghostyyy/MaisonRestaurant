@@ -9,7 +9,40 @@
           <p>Мы открылись в 2018 году с простой идеей: готовить так, как готовят дома — с любовью, из хороших продуктов, без лишней суеты. Сегодня Maison — это место, куда возвращаются.</p>
         </div>
         <div class="about-hero__image" aria-hidden="true">
-          <div class="about-hero__image-placeholder"></div>
+          <svg class="about-hero__svg" viewBox="0 0 520 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Сервировка стола">
+            <!-- charger plate -->
+            <circle cx="248" cy="300" r="150" fill="var(--white)" />
+            <circle cx="248" cy="300" r="150" fill="none" stroke="var(--saffron)" stroke-width="2.5" opacity="0.6" />
+            <circle cx="248" cy="300" r="120" fill="var(--cream)" />
+            <circle cx="248" cy="300" r="104" fill="none" stroke="var(--border)" stroke-width="1.5" />
+            <!-- bread + olive oil suggestion -->
+            <ellipse cx="248" cy="300" rx="56" ry="40" fill="var(--olive)" opacity="0.16" />
+            <circle cx="232" cy="292" r="9" fill="var(--olive)" opacity="0.8" />
+            <circle cx="262" cy="304" r="7" fill="var(--saffron)" />
+            <circle cx="250" cy="284" r="5" fill="var(--burgundy)" opacity="0.7" />
+            <!-- fork -->
+            <g stroke="var(--ink)" stroke-width="3.4" stroke-linecap="round" opacity="0.5" fill="none">
+              <path d="M70 188v150" />
+              <path d="M60 188v36c0 7 20 7 20 0v-36" />
+            </g>
+            <!-- knife -->
+            <g stroke="var(--ink)" stroke-width="3.4" stroke-linecap="round" opacity="0.5" fill="none">
+              <path d="M430 188c16 8 16 64 0 72v78" />
+            </g>
+            <!-- wine glass -->
+            <g fill="none" stroke="var(--burgundy)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.85">
+              <path d="M360 96c0 34-16 52-34 52s-34-18-34-52Z" />
+              <path d="M292 96h68" />
+              <path d="M326 148v74" />
+              <path d="M306 224h40" />
+            </g>
+            <path d="M360 96c0 22-7 36-17 45-2-14-2-31 0-45Z" fill="var(--burgundy)" opacity="0.4" />
+            <!-- steam-free sprig garnish -->
+            <g fill="none" stroke="var(--olive-light)" stroke-width="3" stroke-linecap="round">
+              <path d="M150 150c-4-12 2-24 14-30" />
+              <path d="M150 150c10-6 22-4 30 4" />
+            </g>
+          </svg>
         </div>
       </div>
     </div>
@@ -41,7 +74,7 @@
       <h2>Люди, которые делают Maison</h2>
       <div class="team-grid">
         <article class="team-card">
-          <div class="team-card__avatar" aria-hidden="true">👨‍🍳</div>
+          <div class="team-card__avatar" aria-hidden="true">МД</div>
           <div class="team-card__info">
             <h3>Михаил Дорофеев</h3>
             <p class="team-card__role">Шеф-повар</p>
@@ -49,7 +82,7 @@
           </div>
         </article>
         <article class="team-card">
-          <div class="team-card__avatar" aria-hidden="true">🥂</div>
+          <div class="team-card__avatar" aria-hidden="true">ЕВ</div>
           <div class="team-card__info">
             <h3>Елена Волкова</h3>
             <p class="team-card__role">Сомелье</p>
@@ -57,11 +90,11 @@
           </div>
         </article>
         <article class="team-card">
-          <div class="team-card__avatar" aria-hidden="true">🌿</div>
+          <div class="team-card__avatar" aria-hidden="true">АБ</div>
           <div class="team-card__info">
             <h3>Арина Белова</h3>
             <p class="team-card__role">Су-шеф</p>
-            <p>Отвечает за заготовки и ферментацию. В холодильнике Arины всегда что-то бродит и созревает.</p>
+            <p>Отвечает за заготовки и ферментацию. В холодильнике Арины всегда что-то бродит и созревает.</p>
           </div>
         </article>
       </div>
