@@ -92,7 +92,7 @@ const stmtUpcomingConfirmed = db.prepare(
 
 export function getTableState(tableId, settings, now = new Date()) {
   const nowIso = now.toISOString()
-  const { dining_minutes, buffer_min } = settings
+  const { buffer_min } = settings
 
   const openVisit = stmtOpenVisit.get(tableId)
   if (openVisit) return 'OCCUPIED'

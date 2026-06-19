@@ -29,6 +29,39 @@ document.querySelectorAll('[data-flash]').forEach((el) => {
   showToast(el.dataset.flash, el.dataset.flashType || 'info')
 })
 
+// ---- Dialog open/close (delegated; CSP-safe replacement for inline onclick) ----
+document.addEventListener('click', (e) => {
+  const opener = e.target.closest('[data-dialog-open]')
+  if (opener) {
+    const dlg = document.getElementById(opener.dataset.dialogOpen)
+    if (dlg && typeof dlg.showModal === 'function') dlg.showModal()
+    return
+  }
+  const closer = e.target.closest('[data-dialog-close]')
+  if (closer) {
+    const dlg = closer.closest('dialog')
+    if (dlg) dlg.close()
+  }
+})
+
+// ---- Auto-submit on change (delegated; replaces inline onchange) ----
+document.addEventListener('change', (e) => {
+  const el = e.target.closest('[data-autosubmit]')
+  if (el && el.form) el.form.submit()
+})
+
+// ---- Confirm-before-submit (delegated; replaces inline onsubmit) ----
+document.addEventListener(
+  'submit',
+  (e) => {
+    const form = e.target.closest('[data-confirm]')
+    if (form && !window.confirm(form.dataset.confirm)) {
+      e.preventDefault()
+    }
+  },
+  true
+)
+
 // ---- Scroll reveal ----
 if ('IntersectionObserver' in window) {
   const revealObserver = new IntersectionObserver(

@@ -1,5 +1,4 @@
 import { getMenuGrouped } from '../services/menu.js'
-import { getSettings } from '../services/settings.js'
 
 export default async function publicRoutes(app) {
   // Home page

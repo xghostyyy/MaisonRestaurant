@@ -1,11 +1,11 @@
 <script id="floor-data" type="application/json"><%~ it.tablesJson %></script>
 
-<div class="staff-page-header">
+<div class="staff-page-header" data-csrf="<%= it.csrfToken %>">
   <h1>Редактор плана зала</h1>
   <div style="display:flex;gap:var(--space-3);align-items:center">
     <span id="save-status" style="color:var(--olive);display:none">✓ Сохранено</span>
-    <button class="btn btn--ghost" onclick="addTable()">+ Стол</button>
-    <button class="btn btn--accent" onclick="saveFloor()">Сохранить</button>
+    <button type="button" class="btn btn--ghost" data-floor-add>+ Стол</button>
+    <button type="button" class="btn btn--accent" data-floor-save>Сохранить</button>
   </div>
 </div>
 
@@ -37,7 +37,7 @@
         <option value="rect">Прямоугольный</option>
       </select>
     </div>
-    <button class="btn btn--danger btn--sm" onclick="deleteSelected()" style="margin-top:auto">Удалить стол</button>
+    <button type="button" class="btn btn--danger btn--sm" data-floor-delete style="margin-top:auto">Удалить стол</button>
   </aside>
 </div>
 

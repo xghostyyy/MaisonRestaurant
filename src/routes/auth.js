@@ -1,5 +1,5 @@
 import { authenticate, hashPassword } from '../auth.js'
-import { findUserById, updatePassword } from '../services/staff.js'
+import { updatePassword } from '../services/staff.js'
 
 export default async function authRoutes(app) {
   // GET /login

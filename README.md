@@ -57,14 +57,14 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000).  
 Staff login: [http://localhost:3000/login](http://localhost:3000/login).
 
-Default seed credentials:
+Default seed credentials (all roles share the same demo password — change in production):
 
 | Role | Email | Password |
 |---|---|---|
-| Admin | `admin@maison.ru` | `adminpass123` |
-| Host | `host@maison.ru` | `hostpass123` |
-| Waiter | `waiter@maison.ru` | `waiterpass123` |
-| Chef | `chef@maison.ru` | `chefpass123` |
+| Admin | `admin@maison.ru` | `changeme` |
+| Host | `host@maison.ru` | `changeme` |
+| Waiter | `waiter@maison.ru` | `changeme` |
+| Chef | `chef@maison.ru` | `changeme` |
 
 ---
 

@@ -14,15 +14,15 @@
       <form class="filter-form" method="get" action="/menu">
         <span class="filter-form__label">Фильтры:</span>
         <label class="filter-chip">
-          <input type="checkbox" name="vegan" value="1" <%= it.filters.vegan ? 'checked' : '' %> onchange="this.form.submit()" />
+          <input type="checkbox" name="vegan" value="1" <%= it.filters.vegan ? 'checked' : '' %> data-autosubmit />
           <span>🌱 Веган</span>
         </label>
         <label class="filter-chip">
-          <input type="checkbox" name="vegetarian" value="1" <%= it.filters.vegetarian ? 'checked' : '' %> onchange="this.form.submit()" />
+          <input type="checkbox" name="vegetarian" value="1" <%= it.filters.vegetarian ? 'checked' : '' %> data-autosubmit />
           <span>🥦 Вегетарианское</span>
         </label>
         <label class="filter-chip">
-          <input type="checkbox" name="glutenFree" value="1" <%= it.filters.glutenFree ? 'checked' : '' %> onchange="this.form.submit()" />
+          <input type="checkbox" name="glutenFree" value="1" <%= it.filters.glutenFree ? 'checked' : '' %> data-autosubmit />
           <span>🌾 Без глютена</span>
         </label>
         <noscript><button type="submit" class="btn btn--ghost btn--sm">Применить</button></noscript>

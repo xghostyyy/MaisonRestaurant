@@ -1,6 +1,6 @@
 <div class="staff-page-header">
   <h1>Персонал</h1>
-  <button class="btn btn--accent" onclick="document.getElementById('add-staff-dialog').showModal()">+ Добавить</button>
+  <button class="btn btn--accent" data-dialog-open="add-staff-dialog">+ Добавить</button>
 </div>
 
 <% if (it.flash) { %>
@@ -21,13 +21,13 @@
         <td><span class="badge badge--<%= u.is_active ? 'confirmed' : 'cancelled' %>"><%= u.is_active ? 'Активен' : 'Неактивен' %></span></td>
         <td style="white-space:nowrap">
           <form method="post" action="/admin/staff/<%= u.id %>/reset-password" style="display:inline"
-                onsubmit="return confirm('Сбросить пароль для <%= u.name %>?')">
+                data-confirm="Сбросить пароль для <%= u.name %>?">
             <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
             <button type="submit" class="btn btn--ghost btn--sm">Сброс пароля</button>
           </form>
           <% if (u.is_active && u.id !== it.user.id) { %>
           <form method="post" action="/admin/staff/<%= u.id %>/deactivate" style="display:inline"
-                onsubmit="return confirm('Деактивировать <%= u.name %>?')">
+                data-confirm="Деактивировать <%= u.name %>?">
             <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
             <button type="submit" class="btn btn--danger btn--sm">Деактив.</button>
           </form>
@@ -69,7 +69,7 @@
     <p class="form-hint" style="margin-bottom:var(--space-4)">Временный пароль будет сгенерирован автоматически. Сотрудник сменит его при первом входе.</p>
     <div style="display:flex;gap:var(--space-3)">
       <button type="submit" class="btn btn--accent">Добавить</button>
-      <button type="button" class="btn btn--ghost" onclick="this.closest('dialog').close()">Отмена</button>
+      <button type="button" class="btn btn--ghost" data-dialog-close>Отмена</button>
     </div>
   </form>
 </dialog>

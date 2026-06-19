@@ -1,5 +1,5 @@
 import { requireAuth, requireRole } from '../auth.js'
-import { listActiveTables, getFloorWithStates } from '../services/tables.js'
+import { getFloorWithStates } from '../services/tables.js'
 import { listReservationsForDay, updateReservationStatus } from '../services/reservations.js'
 import { openVisit, findOpenVisitByTable } from '../services/visits.js'
 import { getSettings } from '../services/settings.js'
@@ -57,9 +57,6 @@ export default async function hostRoutes(app) {
 
   // POST /host/reservations/:id/seat — посадить гостей (создать визит)
   app.post('/host/reservations/:id/seat', { preHandler: [authHook, roleHook] }, async (req, reply) => {
-    const settings = getSettings()
-    const tables = listActiveTables()
-
     // Find reservation
     const { findReservationById } = await import('../services/reservations.js')
     const res = findReservationById(req.params.id)

@@ -91,7 +91,6 @@ export function getAvailableSlots(
   const minLeadMs = min_lead_hours * 60 * 60 * 1000
   const maxAdvanceMs = max_advance_days * 24 * 60 * 60 * 1000
   const diningMs = dining_minutes * 60 * 1000
-  const bufferMs = buffer_min * 60 * 1000
 
   // Eligible tables
   if (!partySize || partySize <= 0) return []
@@ -104,11 +103,11 @@ export function getAvailableSlots(
   const slots = []
 
   for (const { open, close } of intervals) {
-    let [oh, om] = open.split(':').map(Number)
-    let [ch, cm] = close.split(':').map(Number)
+    const [oh, om] = open.split(':').map(Number)
+    const [ch, cm] = close.split(':').map(Number)
 
     // Handle midnight rollover (e.g. close = "00:00" means next day 00:00)
-    let openMs = (oh * 60 + om) * 60 * 1000
+    const openMs = (oh * 60 + om) * 60 * 1000
     let closeMs = (ch * 60 + cm) * 60 * 1000
     if (closeMs === 0) closeMs = 24 * 60 * 60 * 1000
     if (closeMs <= openMs) closeMs += 24 * 60 * 60 * 1000

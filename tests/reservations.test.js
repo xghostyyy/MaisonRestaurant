@@ -1,24 +1,9 @@
-import { test, before, after, describe } from 'node:test'
+import { test, before, describe } from 'node:test'
 import assert from 'node:assert/strict'
-import Database from 'better-sqlite3'
-import { readFileSync } from 'fs'
-import { join, dirname } from 'path'
-import { fileURLToPath } from 'url'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const migrationSQL = readFileSync(join(__dirname, '../db/migrations/001_init.sql'), 'utf8')
-
-// We test getAvailableSlots as a pure function over a test DB
-let db
+// getAvailableSlots is a pure function — we pass tables/settings directly,
+// so no database is needed here.
 const { getAvailableSlots } = await import('../src/services/reservations.js')
-
-// Build isolated in-memory DB for tests
-function buildTestDb() {
-  const testDb = new Database(':memory:')
-  testDb.pragma('foreign_keys = ON')
-  testDb.exec(migrationSQL)
-  return testDb
-}
 
 const DEFAULT_SETTINGS = {
   open_hours_json: JSON.stringify({

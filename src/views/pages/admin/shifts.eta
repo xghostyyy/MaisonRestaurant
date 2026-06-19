@@ -1,6 +1,6 @@
 ﻿<div class="staff-page-header">
   <h1>Расписание смен</h1>
-  <button class="btn btn--accent" onclick="document.getElementById('add-shift-dialog').showModal()">+ Смена</button>
+  <button class="btn btn--accent" data-dialog-open="add-shift-dialog">+ Смена</button>
 </div>
 
 <% if (it.error) { %>
@@ -68,7 +68,7 @@
     </div>
     <div style="display:flex;gap:var(--space-3)">
       <button type="submit" class="btn btn--accent">Добавить</button>
-      <button type="button" class="btn btn--ghost" onclick="this.closest('dialog').close()">Отмена</button>
+      <button type="button" class="btn btn--ghost" data-dialog-close>Отмена</button>
     </div>
   </form>
 </dialog>

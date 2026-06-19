@@ -12,6 +12,7 @@ import fastifyMultipart from '@fastify/multipart'
 import fastifyCsrf from '@fastify/csrf-protection'
 import { Eta } from 'eta'
 import { config } from './src/config.js'
+import { verifyCsrf } from './src/csrf.js'
 import publicRoutes from './src/routes/public.js'
 import reserveRoutes from './src/routes/reserve.js'
 import apiRoutes from './src/routes/api.js'
@@ -88,36 +89,42 @@ await app.register(fastifyCsrf, { sessionPlugin: '@fastify/session' })
 
 // Eta template engine
 const eta = new Eta({ views: join(__dirname, 'src/views'), cache: config.isProd })
+// NOTE: no global `layout` here. @fastify/view forbids setting a layout both
+// globally and per-render, and staff pages need 'layout-staff'. The view wrapper
+// below supplies the default 'layout' so every page still gets one.
 await app.register(fastifyView, {
   engine: { eta },
   root: join(__dirname, 'src/views'),
-  layout: 'layout',
   defaultContext: {
     year: new Date().getFullYear(),
   },
 })
 
-// Auto-inject csrfToken into all reply.view calls
+// Auto-inject csrfToken into all reply.view calls so templates never have to
+// pass it manually. generateCsrf() creates/reuses the per-session secret.
 app.addHook('preHandler', async (req, reply) => {
   const _view = reply.view.bind(reply)
-  reply.view = async function (template, data = {}, opts) {
+  reply.view = async function (template, data = {}, opts = {}) {
     let csrfToken = ''
     try { csrfToken = await reply.generateCsrf() } catch { /* skip if session not ready */ }
-    return _view(template, { csrfToken, ...data }, opts)
+    // Default to the public layout; staff pages pass { layout: 'layout-staff' }.
+    const layout = opts.layout || 'layout'
+    return _view(template, { csrfToken, ...data }, { ...opts, layout })
   }
 })
 
-// Validate CSRF on all mutating requests except /api/* (JSON API)
+// Validate CSRF on all mutating requests except the JSON API (/api/*).
+// Multipart requests are skipped here because their body (and thus the _csrf
+// field) is not parsed until the route consumes req.parts(); those routes call
+// verifyCsrfToken() themselves after parsing.
 app.addHook('preValidation', async (req, reply) => {
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return
   if (req.url.startsWith('/api/')) return
-  try {
-    await req.csrfProtection()
-  } catch {
-    const status = reply.statusCode === 200 ? 403 : reply.statusCode
-    return reply.status(status).view('pages/error', {
+  if ((req.headers['content-type'] || '').startsWith('multipart/form-data')) return
+  if (!verifyCsrf(req)) {
+    return reply.status(403).view('pages/error', {
       title: 'Ошибка безопасности',
-      message: 'Недействительный или отсутствующий CSRF-токен. Обновите страницу и попробуйте снова.',
+      message: 'Истёк срок действия формы. Обновите страницу и попробуйте снова.',
     })
   }
 })
@@ -141,6 +148,13 @@ app.setNotFoundHandler(async (_req, reply) => {
 app.setErrorHandler(async (err, _req, reply) => {
   app.log.error(err)
   const status = err.status || err.statusCode || 500
+  // Friendly, localized message for CSRF failures (expired/tampered token).
+  if (err.code === 'FST_CSRF_INVALID_TOKEN' || err.code === 'FST_CSRF_MISSING_SECRET') {
+    return reply.status(403).view('pages/error', {
+      title: 'Ошибка безопасности',
+      message: 'Истёк срок действия формы. Обновите страницу и попробуйте снова.',
+    })
+  }
   return reply.status(status).view('pages/error', {
     title: 'Ошибка',
     message: config.isProd ? 'Что-то пошло не так. Мы уже разбираемся.' : err.message,

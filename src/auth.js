@@ -29,7 +29,7 @@ export async function authenticate(email, password) {
 
 // ---- Fastify middleware factories ----
 
-export function requireAuth(app) {
+export function requireAuth(_app) {
   return async function (req, reply) {
     if (!req.session?.user) {
       req.session.returnTo = req.url

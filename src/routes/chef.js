@@ -1,5 +1,6 @@
 import { requireAuth, requireRole } from '../auth.js'
 import { listAllItems, listCategories, findItemById, createItem, updateItem, toggleItemAvailability } from '../services/menu.js'
+import { verifyCsrfToken } from '../csrf.js'
 import { randomBytes } from 'crypto'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
@@ -63,12 +64,19 @@ export default async function chefRoutes(app) {
       activeSection: 'chef-menu',
       items,
       categories,
+      pageJS: 'chef-menu',
     }, { layout: 'layout-staff' })
   })
 
   // POST /chef/menu — create item (multipart/form-data)
   app.post('/chef/menu', { preHandler: [authHook, roleHook] }, async (req, reply) => {
     const { body, imageBuffer } = await parseMultipart(req)
+    if (!verifyCsrfToken(req.session && req.session._csrf, body._csrf)) {
+      return reply.status(403).view('pages/error', {
+        title: 'Ошибка безопасности',
+        message: 'Истёк срок действия формы. Обновите страницу и попробуйте снова.',
+      })
+    }
     const id = cuid()
 
     let imageUrl = null
@@ -107,6 +115,12 @@ export default async function chefRoutes(app) {
     if (!item) return reply.status(404).view('pages/404', { title: 'Блюдо не найдено' })
 
     const { body, imageBuffer } = await parseMultipart(req)
+    if (!verifyCsrfToken(req.session && req.session._csrf, body._csrf)) {
+      return reply.status(403).view('pages/error', {
+        title: 'Ошибка безопасности',
+        message: 'Истёк срок действия формы. Обновите страницу и попробуйте снова.',
+      })
+    }
 
     let imageUrl = item.image_url
     let thumbUrl = item.thumb_url

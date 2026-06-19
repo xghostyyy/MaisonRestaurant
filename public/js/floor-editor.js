@@ -131,7 +131,7 @@
     render()
   })
 
-  window.addTable = function () {
+  function addTable() {
     const id = 'c' + Math.random().toString(36).slice(2, 10)
     tables.push({
       id, label: String(tables.length + 1), seats: 4,
@@ -142,7 +142,7 @@
     selectTable(id)
   }
 
-  window.deleteSelected = function () {
+  function deleteSelected() {
     if (!selectedId) return
     if (!confirm('Удалить стол?')) return
     tables = tables.filter(t => t.id !== selectedId)
@@ -151,13 +151,23 @@
     render()
   }
 
-  window.saveFloor = async function () {
-    const btn = document.querySelector('[onclick="saveFloor()"]')
-    if (btn) btn.disabled = true
+  const saveBtn = document.querySelector('[data-floor-save]')
+  // CSRF token is rendered into a data attribute on the page header.
+  const csrfToken = (document.querySelector('[data-csrf]') || {}).dataset?.csrf || ''
+
+  async function saveFloor() {
+    if (saveBtn) saveBtn.disabled = true
     try {
-      const fd = new FormData()
-      fd.append('tablesJson', JSON.stringify(tables))
-      const res = await fetch('/admin/floor', { method: 'POST', body: fd })
+      // Form-encoded (not multipart) so the global CSRF check validates _csrf.
+      const body = new URLSearchParams({
+        tablesJson: JSON.stringify(tables),
+        _csrf: csrfToken,
+      })
+      const res = await fetch('/admin/floor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body,
+      })
       if (res.ok) {
         saveStatus.style.display = 'block'
         setTimeout(() => (saveStatus.style.display = 'none'), 2500)
@@ -165,9 +175,15 @@
         alert('Ошибка при сохранении')
       }
     } finally {
-      if (btn) btn.disabled = false
+      if (saveBtn) saveBtn.disabled = false
     }
   }
+
+  const addBtn = document.querySelector('[data-floor-add]')
+  const deleteBtn = document.querySelector('[data-floor-delete]')
+  if (addBtn) addBtn.addEventListener('click', addTable)
+  if (saveBtn) saveBtn.addEventListener('click', saveFloor)
+  if (deleteBtn) deleteBtn.addEventListener('click', deleteSelected)
 
   render()
 })()

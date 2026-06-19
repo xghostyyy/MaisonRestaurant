@@ -1,6 +1,6 @@
 ﻿<div class="staff-page-header">
   <h1>Управление меню</h1>
-  <button class="btn btn--accent" onclick="document.getElementById('add-item-dialog').showModal()">+ Добавить блюдо</button>
+  <button class="btn btn--accent" data-dialog-open="add-item-dialog">+ Добавить блюдо</button>
 </div>
 
 <!-- Items list -->
@@ -37,8 +37,16 @@
           </span>
         </td>
         <td style="white-space:nowrap">
-          <button class="btn btn--ghost btn--sm"
-                  onclick="openEditDialog('<%= item.id %>','<%= item.name.replace(/'/g,&quot;\\'&quot;) %>','<%= item.description?.replace(/'/g,&quot;\\'&quot;)||'' %>','<%= item.price_cents %>','<%= item.category_id %>','<%= item.is_vegan %>','<%= item.is_vegetarian %>','<%= item.is_gluten_free %>','<%= item.allergens||'' %>','<%= item.sort_order %>')">
+          <button type="button" class="btn btn--ghost btn--sm" data-edit-item
+                  data-id="<%= item.id %>"
+                  data-name="<%= item.name %>"
+                  data-description="<%= item.description || '' %>"
+                  data-price="<%= item.price_cents %>"
+                  data-category="<%= item.category_id %>"
+                  data-vegan="<%= item.is_vegan %>"
+                  data-vegetarian="<%= item.is_vegetarian %>"
+                  data-glutenfree="<%= item.is_gluten_free %>"
+                  data-allergens="<%= item.allergens || '' %>">
             Изменить
           </button>
           <form method="post" action="/chef/menu/<%= item.id %>/stop" style="display:inline">
@@ -99,7 +107,7 @@
     </div>
     <div style="display:flex;gap:var(--space-3)">
       <button type="submit" class="btn btn--accent">Добавить</button>
-      <button type="button" class="btn btn--ghost" onclick="this.closest('dialog').close()">Отмена</button>
+      <button type="button" class="btn btn--ghost" data-dialog-close>Отмена</button>
     </div>
   </form>
 </dialog>
@@ -147,30 +155,10 @@
     <input type="hidden" id="edit-isAvailable" name="isAvailable" value="1" />
     <div style="display:flex;gap:var(--space-3)">
       <button type="submit" class="btn btn--accent">Сохранить</button>
-      <button type="button" class="btn btn--ghost" onclick="this.closest('dialog').close()">Отмена</button>
+      <button type="button" class="btn btn--ghost" data-dialog-close>Отмена</button>
     </div>
   </form>
 </dialog>
-
-<script>
-function openEditDialog(id, name, description, priceCents, categoryId, isVegan, isVeg, isGf, allergens, sortOrder) {
-  const dialog = document.getElementById('edit-item-dialog')
-  const form = document.getElementById('edit-item-form')
-  form.action = '/chef/menu/' + id
-  document.getElementById('edit-name').value = name
-  document.getElementById('edit-desc').value = description
-  document.getElementById('edit-price').value = (parseInt(priceCents) / 100).toFixed(2)
-  document.getElementById('edit-allergens').value = allergens
-  document.getElementById('edit-vegan').checked = isVegan === '1'
-  document.getElementById('edit-veg').checked = isVeg === '1'
-  document.getElementById('edit-gf').checked = isGf === '1'
-  const catSel = document.getElementById('edit-cat')
-  if (catSel) {
-    for (const opt of catSel.options) opt.selected = opt.value === categoryId
-  }
-  dialog.showModal()
-}
-</script>
 
 <style>
 .menu-dialog {

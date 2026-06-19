@@ -4,7 +4,7 @@ export const ReserveSchema = z.object({
   guestName: z.string().min(2, 'Имя должно быть не короче 2 символов').max(100),
   guestPhone: z
     .string()
-    .regex(/^\+?[\d\s\-() ]{7,20}$/, 'Введите корректный номер телефона'),
+    .regex(/^\+?[\d\s\-()]{7,20}$/, 'Введите корректный номер телефона'),
   guestEmail: z.string().email('Некорректный email').optional().or(z.literal('')),
   partySize: z.coerce
     .number({ invalid_type_error: 'Укажите количество гостей' })
@@ -19,7 +19,7 @@ export const ReserveSchema = z.object({
 
 export const EditReservationSchema = z.object({
   guestName: z.string().min(2).max(100),
-  guestPhone: z.string().regex(/^\+?[\d\s\-() ]{7,20}$/),
+  guestPhone: z.string().regex(/^\+?[\d\s\-()]{7,20}$/),
   guestEmail: z.string().email().optional().or(z.literal('')),
   partySize: z.coerce.number().int().min(1).max(20),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
